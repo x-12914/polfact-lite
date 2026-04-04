@@ -21,6 +21,7 @@
   --color-intel-700: #334155;
   
   --shadow-premium: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
+  --shadow-premium-lg: 0 15px 50px -12px rgba(0, 0, 0, 0.4);
   --shadow-premium-xl: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
 }
 
