@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getClaim, uploadMedia, deleteClaim, updateClaim, deleteMedia, deleteSource, analyzeClaim, clearClaimEvidence } from '../services/api';
+import { getClaim, uploadMedia, deleteClaim, updateClaim, deleteMedia, deleteSource, analyzeClaim, clearClaimEvidence, type Media } from '../services/api';
 import { cn } from '../utils/cn';
 import { Modal } from '../components/ui/Modal';
 import { useAuth } from '../contexts/AuthContext';
@@ -45,6 +45,9 @@ export function ClaimDetail() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isResearching, setIsResearching] = useState<string | null>(null);
+
+  const isAdmin = userRole === 'admin';
+  const canEdit = isAdmin;
 
   const { data: claim, isLoading, error } = useQuery({
     queryKey: ['claim', id],
