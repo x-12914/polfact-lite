@@ -75,7 +75,7 @@ def _transcribe_media_background(media_id: int, file_path: str):
         # Extract claims with GPT
         claims_text = ""
         try:
-            client = openai.OpenAI()
+            client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
