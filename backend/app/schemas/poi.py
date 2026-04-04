@@ -1,8 +1,10 @@
-from typing import Optional, List, Generic, TypeVar
+from typing import Optional, List, Generic, TypeVar, TYPE_CHECKING
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from app.models.poi import POIStatus
-from app.schemas.claim import ClaimFull
+
+if TYPE_CHECKING:
+    from app.schemas.claim import ClaimFull
 
 T = TypeVar("T")
 
@@ -28,8 +30,14 @@ class POIInDBBase(POIBase):
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
+class POIStats(BaseModel):
+    fulfilled: int
+    partial: int
+    unfulfilled: int
+    ongoing: int
+
 class POI(POIInDBBase):
-    pass
+    stats: Optional[POIStats] = None
 
 class PaginatedResponse(BaseModel, Generic[T]):
     total: int
@@ -37,14 +45,9 @@ class PaginatedResponse(BaseModel, Generic[T]):
     offset: int
     results: List[T]
 
-class POIStats(BaseModel):
-    fulfilled: int
-    partial: int
-    unfulfilled: int
-    ongoing: int
-
 class POIFull(POI):
     stats: POIStats
-    claims: List[ClaimFull] = []
+    claims: List["ClaimFull"] = []
 
+from app.schemas.claim import ClaimFull
 POIFull.model_rebuild()

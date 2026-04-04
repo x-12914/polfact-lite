@@ -139,7 +139,7 @@ export function POIDetail() {
                     deletePoiMutation.mutate();
                   }
                 }}
-                className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors"
+                className="btn-premium bg-white border border-slate-200 !text-rose-600 hover:bg-rose-50 hover:border-rose-100 shadow-sm"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete
@@ -152,7 +152,7 @@ export function POIDetail() {
                   setEditStatus(poi.status);
                   setShowEditModal(true);
                 }}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
+                className="btn-premium btn-primary"
               >
                 <Edit className="h-4 w-4" />
                 Edit Profile
@@ -164,22 +164,22 @@ export function POIDetail() {
 
       <div className="flex flex-col gap-8 lg:flex-row">
         <div className="w-full lg:w-1/3">
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm p-8 flex flex-col items-center">
+          <div className="card-premium !p-8 flex flex-col items-center">
             <div 
               className={cn(
-                "relative group cursor-pointer h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-xl",
-                canEdit && "hover:ring-4 hover:ring-blue-500/20"
+                "relative group cursor-pointer h-40 w-40 overflow-hidden rounded-3xl border-4 border-white bg-slate-100 shadow-2xl transition-all duration-500",
+                canEdit && "hover:ring-8 hover:ring-blue-500/10"
               )}
               onClick={handleImageClick}
             >
               <img 
                 src={getMediaUrl(poi.profile_image)} 
                 alt={poi.name} 
-                className="h-full w-full object-cover transition-transform group-hover:scale-110" 
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
               />
               {canEdit && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {uploadImageMutation.isPending ? <Loader2 className="h-6 w-6 animate-spin text-white" /> : <Camera className="h-6 w-6 text-white" />}
+                  {uploadImageMutation.isPending ? <Loader2 className="h-8 w-8 animate-spin text-white" /> : <Camera className="h-8 w-8 text-white" />}
                 </div>
               )}
               <input 
@@ -191,28 +191,31 @@ export function POIDetail() {
               />
             </div>
             
-            <h1 className="mt-6 text-2xl font-bold text-slate-900">{poi.name}</h1>
-            <p className="text-sm text-slate-500 font-medium">{poi.location || 'Unknown Location'}</p>
-            <div className="mt-4">
-              <StatusBadge status={poi.status} className="px-4 py-1 text-sm font-bold" />
+            <h1 className="mt-8 text-3xl font-black text-slate-900 tracking-tight">{poi.name}</h1>
+            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest mt-1">{poi.location || 'Unknown Location'}</p>
+            <div className="mt-6">
+              <StatusBadge status={poi.status} className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em]" />
             </div>
             
-            <p className="mt-6 text-sm text-slate-600 leading-relaxed text-center italic">
-              {poi.description || "No biography available."}
-            </p>
+            <div className="mt-8 w-full border-t border-slate-100 pt-8">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 text-center">Background Intelligence</h3>
+              <p className="text-sm text-slate-600 leading-relaxed text-center font-medium italic">
+                {poi.description || "No biography available."}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 space-y-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
+          <div className="flex-1 space-y-6">
+          <div className="card-premium !p-0 overflow-hidden">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-slate-50/50">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Analysis Log</h2>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">{filteredAndSortedClaims.length} Claims Tracked</p>
+                <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Investigation Analysis Log</h2>
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">{filteredAndSortedClaims.length} Claims Indexed</p>
               </div>
               <button 
                 onClick={() => setIsAddingClaim(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
+                className="btn-premium btn-primary !py-2 !px-4"
               >
                 <Plus className="h-4 w-4" /> Add Claim
               </button>
@@ -282,7 +285,7 @@ export function POIDetail() {
           </div>
           <div className="flex gap-3 pt-6">
             <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 rounded-xl bg-slate-100 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200">Cancel</button>
-            <button type="submit" disabled={updateMutation.isPending} className="flex-[2] rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700">
+            <button type="submit" disabled={updateMutation.isPending} className="flex-[2] rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700">
               {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Update Profile'}
             </button>
           </div>
@@ -305,7 +308,7 @@ export function POIDetail() {
           />
           <div className="flex gap-3 pt-4">
             <button type="button" onClick={() => setIsAddingClaim(false)} className="flex-1 rounded-xl bg-slate-100 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200">Cancel</button>
-            <button type="submit" disabled={claimMutation.isPending} className="flex-[2] rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700">
+            <button type="submit" disabled={claimMutation.isPending} className="flex-[2] rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700">
               {claimMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Create Claim'}
             </button>
           </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Loader2, Globe, ExternalLink, CheckCircle, FileText, Activity, X, Plus, User } from 'lucide-react';
+import { Search, Loader2, Globe, ExternalLink, CheckCircle, FileText, Activity, X, Plus, User, Filter } from 'lucide-react';
 import { searchWeb, performResearch } from '../services/api';
 import type { SearchResult, ResearchResult } from '../services/api';
 import { Modal } from '../components/ui/Modal';
@@ -73,45 +73,49 @@ export function WebScraper() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="control-bar">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Web Scraper</h1>
-          <p className="mt-2 text-slate-500 font-medium tracking-tight">Search and instantly analyze articles for deep fact-checking.</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Web Scraper</h1>
+          <p className="mt-1 text-slate-500 font-medium tracking-tight">Search and instantly analyze articles for deep fact-checking.</p>
         </div>
-        <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest">
-           <Activity className="h-4 w-4" /> Live OSINT Engine
+        <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-[0.2em] shadow-inner shadow-blue-600/5">
+           <Activity className="h-4 w-4" strokeWidth={3} /> Live OSINT Engine
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="card-premium !p-8">
         <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-300" />
+          <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
             <input
               type="text"
               placeholder="Enter a name, claim, or topic to search..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-12 pr-4 py-4 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+              className="input-premium input-with-icon py-4"
               disabled={loading}
             />
           </div>
           <div className="flex gap-4">
-            <select 
-              value={numResults}
-              onChange={(e) => setNumResults(Number(e.target.value))}
-              disabled={loading}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
-            >
-              <option value={10}>10 Results</option>
-              <option value={20}>20 Results</option>
-              <option value={50}>50 Results</option>
-              <option value={100}>100 Results</option>
-            </select>
+            <div className="relative group">
+              <select 
+                value={numResults}
+                onChange={(e) => setNumResults(Number(e.target.value))}
+                disabled={loading}
+                className="input-premium input-with-icon px-6 py-4 appearance-none cursor-pointer pr-12 min-w-[140px]"
+              >
+                <option value={10}>10 Results</option>
+                <option value={20}>20 Results</option>
+                <option value={50}>50 Results</option>
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                <Filter className="h-4 w-4" />
+              </div>
+            </div>
             <button
               type="submit"
               disabled={!query.trim() || loading}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 font-bold text-white shadow-xl shadow-blue-200 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+              className="btn-premium btn-primary flex-1 md:flex-none !px-8 shadow-blue-500/20"
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Globe className="h-5 w-5" />}
               Execute Search
@@ -135,9 +139,9 @@ export function WebScraper() {
       </div>
 
       {results && results.length > 0 && (
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <div className="border-b border-slate-100 bg-slate-50/50 px-8 py-5">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Discovery Engine Results</h2>
+        <div className="card-premium !p-0 overflow-hidden">
+          <div className="border-b border-slate-100 bg-slate-50/50 px-8 py-6">
+            <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Discovery Engine: Managed Intelligence Results</h2>
           </div>
           <div className="divide-y divide-slate-50">
             {results.map((result, index) => (
@@ -241,7 +245,7 @@ export function WebScraper() {
                 <button
                   onClick={handleRefineResearch}
                   disabled={isRefining || !focusEntity.trim()}
-                  className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-50"
+                  className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-50"
                 >
                   {isRefining ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Activity className="h-3.5 w-3.5" />}
                   Refocus
@@ -322,7 +326,7 @@ export function WebScraper() {
                 href={researchResult.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-[2] flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
+                className="flex-[2] flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-black/20 hover:bg-blue-700 transition-all active:scale-95"
               >
                 <ExternalLink className="h-4 w-4" />
                 Read Full Source

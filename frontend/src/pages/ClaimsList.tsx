@@ -61,44 +61,44 @@ export function ClaimsList() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="control-bar">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Claims Engine</h1>
-          <p className="mt-1 text-slate-500">Track and verify factual statements across all personas.</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Claims Engine</h1>
+          <p className="mt-1 text-slate-500 font-medium tracking-tight">Track and verify factual statements across all personas.</p>
         </div>
         
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
+          className="btn-premium btn-primary"
         >
           <Plus className="h-5 w-5" />
           Add New Claim
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      <div className="flex flex-wrap items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all focus-within:shadow-md">
+        <div className="relative flex-1 min-w-[280px] group">
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
           <input
             type="text"
-            placeholder="Search claims..."
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="Search claims by content..."
+            className="input-premium input-with-icon !bg-slate-50 border-transparent hover:border-slate-200 focus:bg-white"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
-        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
-          <Filter className="h-4 w-4 text-slate-400" />
+        <div className="relative group">
+          <Filter className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" />
           <select 
-            className="bg-transparent text-sm text-slate-900 focus:outline-none"
+            className="input-premium input-with-icon pr-10 appearance-none cursor-pointer !bg-slate-50 border-transparent hover:border-slate-200 focus:bg-white"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
             <option value="all">All Statuses</option>
-            <option value="fulfilled">Fulfilled</option>
-            <option value="unfulfilled">Unfulfilled</option>
-            <option value="ongoing">Ongoing</option>
+            <option value="fulfilled">Fulfilled Only</option>
+            <option value="unfulfilled">Unfulfilled Only</option>
+            <option value="ongoing">Ongoing Only</option>
           </select>
         </div>
       </div>
@@ -108,33 +108,33 @@ export function ClaimsList() {
           <div 
             key={claim.id} 
             onClick={() => navigate(`/claim/${claim.id}`)}
-            className="group flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-all cursor-pointer"
+            className="card-premium group flex items-center justify-between gap-6 !p-6"
           >
-            <div className="flex-1 space-y-2">
-              <div className="flex items-center gap-3">
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-4">
                 <span className={cn(
-                  "rounded-full px-3 py-1 text-[10px] font-bold uppercase",
+                  "rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest leading-none",
                   claim.status === 'fulfilled' ? "bg-emerald-100 text-emerald-800" :
                   claim.status === 'unfulfilled' ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"
                 )}>
                   {claim.status}
                 </span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                  ID: {claim.id}
+                <span className="text-[11px] font-black text-slate-300 uppercase tracking-[0.2em]">
+                  REF NO: {claim.id}
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">
                 {claim.description}
               </h3>
-              <div className="flex items-center gap-4 text-xs text-slate-500">
-                <div className="flex items-center gap-1 font-medium">
-                  <Clock className="h-3.5 w-3.5" />
-                  <span>{new Date(claim.created_at).toLocaleDateString()}</span>
+              <div className="flex items-center gap-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3.5 w-3.5 text-blue-500" />
+                  <span>Filed: {new Date(claim.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 group-hover:bg-blue-50 text-slate-400 group-hover:text-blue-600 transition-all">
-              <ChevronRight className="h-5 w-5" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 group-hover:bg-blue-600 text-slate-300 group-hover:text-white transition-all transform group-hover:rotate-45 shadow-inner group-hover:shadow-lg group-hover:shadow-blue-500/20">
+              <ChevronRight className="h-6 w-6" />
             </div>
           </div>
         ))}
@@ -203,7 +203,7 @@ export function ClaimsList() {
             <button 
               type="submit"
               disabled={createMutation.isPending}
-              className="flex-3 rounded-xl bg-blue-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all disabled:opacity-50"
+              className="flex-3 rounded-xl bg-blue-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all disabled:opacity-50"
             >
               {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Create Claim'}
             </button>

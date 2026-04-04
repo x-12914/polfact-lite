@@ -191,7 +191,7 @@ export function AddToPOIModal({ isOpen, onClose, initialDescription, sourceUrl, 
           <button 
             type="submit" 
             disabled={claimMutation.isPending || evidenceMutation.isPending || !selectedPoiId || (mode === 'evidence' && !selectedClaimId)}
-            className="flex-[2] inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
+            className="flex-[2] inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-black/20 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
           >
             {claimMutation.isPending || evidenceMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
             {mode === 'new' ? 'Launch New Claim' : 'Promote Evidence'}

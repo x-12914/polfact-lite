@@ -56,7 +56,7 @@ export interface Claim {
 export interface Source {
   id: number;
   claim_id: number;
-  type: 'manifesto' | 'interview' | 'osint' | 'media';
+  type: 'manifesto' | 'interview' | 'osint' | 'media' | 'manual';
   title: string;
   content: string | null;
   link: string | null;

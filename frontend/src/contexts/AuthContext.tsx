@@ -47,9 +47,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const userData: User = response.data.user 
-        ? { ...response.data.user, id: response.data.user.id.toString() }
+        ? { ...response.data.user, id: Number(response.data.user.id) }
         : {
-            id: '0',
+            id: 0,
             email: email,
             name: email,
             role: 'user',

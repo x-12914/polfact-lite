@@ -37,45 +37,45 @@ export function POIList() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="control-bar">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Persons of Interest</h1>
-          <p className="mt-1 text-slate-500">Monitor and analyze political figures and their claims.</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Persons of Interest</h1>
+          <p className="mt-1 text-slate-500 font-medium">Monitor and analyze political figures and their claims.</p>
         </div>
 
-        {userRole === 'admin' && (
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
-          >
-            <Plus className="h-4 w-4" /> Add Person
-          </button>
-        )}
-        
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative group">
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <input
               type="text"
-              placeholder="Search POIs..."
-              className="rounded-lg border border-slate-200 bg-white pl-10 pr-4 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Search by name..."
+              className="input-premium input-with-icon w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           
-          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2">
-            <Filter className="h-4 w-4 text-slate-400" />
+          <div className="relative group">
+            <Filter className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" />
             <select 
-              className="bg-transparent text-sm text-slate-900 focus:outline-none"
+              className="input-premium input-with-icon pr-10 appearance-none cursor-pointer"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as any)}
             >
               <option value="all">All Statuses</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="completed">Completed</option>
+              <option value="ongoing">Ongoing Only</option>
+              <option value="completed">Completed Only</option>
             </select>
           </div>
+
+          {userRole === 'admin' && (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="btn-premium btn-primary"
+            >
+              <Plus className="h-4 w-4" /> Add Person
+            </button>
+          )}
         </div>
       </div>
 

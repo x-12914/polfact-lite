@@ -14,7 +14,7 @@ export function POICard({ poi }: POICardProps) {
   return (
     <Link 
       to={`/poi/${poi.id}`}
-      className="group block overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:border-blue-400 hover:shadow-lg"
+      className="card-premium group !p-0 overflow-hidden"
     >
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
         <img
@@ -23,32 +23,32 @@ export function POICard({ poi }: POICardProps) {
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
         />
         <div className={cn(
-          "absolute top-4 right-4 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-sm",
+          "absolute top-4 right-4 rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-xl shadow-black/20",
           poi.status === 'ongoing' ? 'bg-amber-500' : 'bg-emerald-500'
         )}>
           {poi.status}
         </div>
       </div>
       <div className="p-5">
-        <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+        <h3 className="text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors tracking-tight">
           {poi.name}
         </h3>
-        <p className="mt-1 text-sm text-slate-500">
-          {poi.location}
+        <p className="mt-1 text-xs text-slate-400 font-bold uppercase tracking-widest">
+          {poi.location || 'GLOBAL REACH'}
         </p>
         
-        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-slate-100 pt-4">
+        <div className="mt-6 grid grid-cols-3 gap-2 border-t border-slate-50 pt-6">
           <div className="text-center">
-            <span className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Fulfilled</span>
-            <span className="text-sm font-bold text-emerald-600">{stats.fulfilled || 0}</span>
+            <span className="block text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">Pass</span>
+            <span className="text-xs font-black text-emerald-600">{stats.fulfilled || 0}</span>
           </div>
           <div className="text-center">
-            <span className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Partial</span>
-            <span className="text-sm font-bold text-amber-600">{stats.partial || 0}</span>
+            <span className="block text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">Partial</span>
+            <span className="text-xs font-black text-amber-600">{stats.partial || 0}</span>
           </div>
           <div className="text-center">
-            <span className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Unfulfilled</span>
-            <span className="text-sm font-bold text-rose-600">{stats.unfulfilled || 0}</span>
+            <span className="block text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">Fail</span>
+            <span className="text-xs font-black text-rose-600">{stats.unfulfilled || 0}</span>
           </div>
         </div>
         

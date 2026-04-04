@@ -4,11 +4,7 @@ from datetime import datetime
 from app.models.claim import ClaimStatus
 from app.schemas.source import Source
 from app.schemas.media import Media
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from app.schemas.poi import POI
-else:
-    POI = Any
+from app.schemas.poi import POI
 
 class ClaimBase(BaseModel):
     poi_id: int
@@ -36,7 +32,7 @@ class ClaimInDBBase(ClaimBase):
 class Claim(ClaimInDBBase):
     media: List[Media] = []
     sources: List[Source] = []
-    poi: Optional[Any] = None # Using Any to avoid circular import issues in Lite
+    poi: Optional[POI] = None
 
 class ClaimFull(Claim):
     pass

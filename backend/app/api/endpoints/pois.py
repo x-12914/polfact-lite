@@ -12,6 +12,9 @@ router = APIRouter()
 @router.get("/", response_model=ResponseModel[PaginatedResponse[POI]])
 def read_pois(db: Session = Depends(deps.get_db), skip: int = Query(0, ge=0), limit: int = Query(10, ge=1, le=100), search: Optional[str] = None) -> Any:
     results, total = poi_service.get_pois(db, skip=skip, limit=limit, search=search)
+    # Populate stats for each POI for the list view components
+    for p in results:
+        p.stats = poi_service.get_poi_stats(db, poi_id=p.id)
     return ResponseModel(data=PaginatedResponse(total=total, limit=limit, offset=skip, results=results))
 
 @router.post("/", response_model=ResponseModel[POI], status_code=status.HTTP_201_CREATED)

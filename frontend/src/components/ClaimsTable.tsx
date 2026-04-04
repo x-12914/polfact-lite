@@ -74,15 +74,15 @@ export function ClaimsTable({ claims }: ClaimsTableProps) {
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="card-premium !p-0 overflow-hidden shadow-xl shadow-black/5">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm border-collapse">
-          <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
+          <thead className="bg-slate-50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
             <tr>
-              <th className="px-6 py-4">Claim</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Date</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+              <th className="px-8 py-5">Intel Fragment</th>
+              <th className="px-8 py-5">Current Status</th>
+              <th className="px-8 py-5">Recorded On</th>
+              <th className="px-8 py-5 text-right">Ops Control</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -94,12 +94,12 @@ export function ClaimsTable({ claims }: ClaimsTableProps) {
                 <React.Fragment key={claim.id}>
                   <tr 
                     className={cn(
-                      "group cursor-pointer transition-colors hover:bg-slate-50",
-                      isExpanded && "bg-slate-50"
+                      "group cursor-pointer transition-all duration-300 hover:bg-slate-50/80",
+                      isExpanded && "bg-slate-50/80 shadow-inner"
                     )}
                     onClick={() => toggleExpand(claim.id)}
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-8 py-6">
                       <div className="flex items-center gap-3">
                         {isExpanded ? (
                           <ChevronDown className="h-4 w-4 text-slate-400 shrink-0" />
@@ -166,15 +166,16 @@ export function ClaimsTable({ claims }: ClaimsTableProps) {
                   </tr>
                   {isExpanded && (
                     <tr>
-                      <td colSpan={4} className="bg-slate-50/50 px-12 py-8">
-                        <div className="grid grid-cols-1 gap-8">
-                           <div className="mt-2 rounded-xl bg-blue-600 p-4 text-white shadow-lg">
+                      <td colSpan={4} className="bg-slate-900 border-t border-slate-800 px-12 py-10">
+                        <div className="grid grid-cols-1 gap-8 relative">
+                           <div className="absolute -left-6 top-0 bottom-0 w-1 bg-blue-500 rounded-full" />
+                           <div className="space-y-4">
                               <div className="flex items-center gap-2">
-                                <CheckCircle2 className="h-4 w-4" />
-                                <span className="text-xs font-bold uppercase tracking-wider">AI Verification Insight</span>
+                                <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Hub Intelligence Briefing</span>
                               </div>
-                              <p className="mt-2 text-sm font-medium leading-relaxed opacity-90">
-                                {claim.ai_insight || "No specific AI insight available for this claim yet."}
+                              <p className="text-base font-medium leading-relaxed text-slate-200">
+                                {claim.ai_insight || "Awaiting advanced analysis engine input for this fragment."}
                               </p>
                             </div>
                         </div>
@@ -228,7 +229,7 @@ export function ClaimsTable({ claims }: ClaimsTableProps) {
               <button 
                 onClick={() => updateMutation.mutate({ id: editingClaim.id, data: { description: editingClaim.description, status: editingClaim.status }})}
                 disabled={updateMutation.isPending}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all disabled:opacity-50"
               >
                 {updateMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 Save Changes

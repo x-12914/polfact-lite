@@ -31,7 +31,7 @@ export function Login() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-blue-200">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-black/20">
             <ShieldCheck className="h-10 w-10 text-white" />
           </div>
           <h1 className="mt-6 text-3xl font-bold text-slate-900">PolFact Lite</h1>
@@ -80,7 +80,7 @@ export function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:opacity-50 shadow-lg shadow-blue-100"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:opacity-50 shadow-lg shadow-black/20"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

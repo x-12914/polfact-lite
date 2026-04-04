@@ -7,9 +7,9 @@ export function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [newRole, setNewRole] = useState<UserRole>('user');
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserName, setNewUserName] = useState('');
@@ -33,10 +33,10 @@ export function UserManagement() {
     }
   };
 
-  const handleRoleChange = async (userId: string, role: UserRole) => {
+  const handleRoleChange = async (userId: number, role: UserRole) => {
     try {
       setActionLoading(userId);
-      const updatedUser = await updateUser(parseInt(userId), { role });
+      const updatedUser = await updateUser(userId, { role });
       setUsers(users.map(u => u.id === userId ? (updatedUser as any) : u));
       setEditingId(null);
     } catch (err: any) {
@@ -46,11 +46,11 @@ export function UserManagement() {
     }
   };
 
-  const handleDelete = async (userId: string) => {
+  const handleDelete = async (userId: number) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
     try {
       setActionLoading(userId);
-      await deleteUser(parseInt(userId));
+      await deleteUser(userId);
       setUsers(users.filter(u => u.id !== userId));
     } catch (err: any) {
       setError(err.message || 'Failed to delete user');

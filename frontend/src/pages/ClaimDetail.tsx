@@ -14,11 +14,12 @@ import {
   Save,
   X,
   ShieldCheck,
-  Globe
+  Globe,
+  Wand2
 } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getClaim, uploadMedia, deleteClaim, updateClaim, deleteMedia, deleteSource } from '../services/api';
+import { getClaim, uploadMedia, deleteClaim, updateClaim, deleteMedia, deleteSource, analyzeClaim } from '../services/api';
 import { cn } from '../utils/cn';
 import { Modal } from '../components/ui/Modal';
 import { useAuth } from '../contexts/AuthContext';
@@ -68,6 +69,13 @@ export function ClaimDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
       setShowEditModal(false);
+    }
+  });
+
+  const analyzeMutation = useMutation({
+    mutationFn: () => analyzeClaim(claim?.description || '', Number(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['claim', id] });
     }
   });
 
@@ -199,62 +207,75 @@ export function ClaimDetail() {
                 <Trash2 className="h-4 w-4" />
                 Delete Claim
               </button>
-              <button 
-                onClick={() => setShowEditModal(true)}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95"
-              >
-                <Edit className="h-4 w-4" />
-                Edit Claim
-              </button>
+                <button 
+                  onClick={() => setShowEditModal(true)}
+                  className="btn-premium btn-primary"
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit Claim
+                </button>
             </>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-4 tracking-tight">Verdict & AI Insight</h2>
-            <div className="flex items-center gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
-              {getVerdictIcon()}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-8">
+          <div className="card-premium">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Verdict & AI Intelligence</h2>
+              {canEdit && (
+                <button 
+                  onClick={() => analyzeMutation.mutate()}
+                  disabled={analyzeMutation.isPending}
+                  className="btn-premium !bg-slate-900 !py-2 !px-4 hover:!bg-slate-800"
+                >
+                  {analyzeMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+                  AI Analyze
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
+              <div className="transform scale-125">{getVerdictIcon()}</div>
               <div>
-                <span className={cn("inline-block rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest", getVerdictColor())}>
+                <span className={cn("inline-block rounded-full px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em]", getVerdictColor())}>
                   {claim.status}
                 </span>
-                <p className="text-xs text-slate-500 mt-1 font-medium italic">Verified by Hub AI Engine</p>
+                <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest italic opacity-60">Verified by Hub AI Engine</p>
               </div>
             </div>
             {claim.ai_insight && (
-              <div className="mt-6">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">AI Reasoning Analysis</h3>
-                <div className="text-slate-700 text-sm leading-relaxed bg-blue-600 p-6 rounded-2xl text-white shadow-xl shadow-blue-100">
+              <div className="mt-8">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1">AI Reasoning Analysis</h3>
+                <div className="text-slate-100 text-sm font-medium leading-relaxed bg-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-800 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
                   {claim.ai_insight}
                 </div>
               </div>
             )}
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Original Statement</h2>
-            <blockquote className="border-l-4 border-blue-600 pl-6 text-xl font-bold text-slate-800 leading-relaxed">
+          <div className="card-premium !p-8">
+            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Original Statement</h2>
+            <blockquote className="border-l-4 border-blue-600 pl-8 text-2xl font-black text-slate-900 leading-tight tracking-tight">
               "{claim.description}"
             </blockquote>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
+          <div className="card-premium !p-0 overflow-hidden">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-slate-50/50">
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Media Analysis</h2>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Foundational Evidence</p>
+                <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Evidence Repository</h2>
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Foundational Intelligence</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 {((claim.media?.length ?? 0) > 0 || (claim.sources?.length ?? 0) > 0) && (
                   <button 
                     onClick={handleDeleteAllEvidence}
-                    className="inline-flex items-center gap-2 rounded-xl border border-rose-100 bg-rose-50 px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-100 transition-all active:scale-95"
+                    className="btn-premium bg-white border border-slate-200 !text-rose-600 hover:bg-rose-50 !py-2 !px-4"
                   >
                     <Trash2 className="h-4 w-4" />
-                    Delete Evidence
+                    Clear
                   </button>
                 )}
                 <div className="relative">
@@ -267,7 +288,7 @@ export function ClaimDetail() {
                   />
                   <label 
                     htmlFor="claim-media-upload"
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all cursor-pointer active:scale-95"
+                    className="btn-premium btn-primary !py-2 !px-4 cursor-pointer"
                   >
                     {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                     Add Evidence
@@ -437,9 +458,9 @@ export function ClaimDetail() {
             </div>
           </div>
 
-          <button className="w-full flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-4 text-sm font-bold text-white hover:bg-blue-700 transition-all active:scale-95 shadow-xl shadow-blue-100">
-            <Share2 className="h-4 w-4" />
-            Generate PDF Report
+          <button className="btn-premium btn-primary w-full !py-4 shadow-xl shadow-blue-500/20">
+            <Share2 className="h-5 w-5" />
+            Generate Intelligence Report
           </button>
         </div>
       </div>
@@ -478,7 +499,7 @@ export function ClaimDetail() {
           </div>
           <div className="flex gap-4 pt-4">
             <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 rounded-2xl bg-slate-100 px-4 py-4 text-sm font-bold text-slate-500 hover:bg-slate-200">Cancel</button>
-            <button type="submit" disabled={updateClaimMutation.isPending} className="flex-[2] rounded-2xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-blue-200 hover:bg-blue-700 flex items-center justify-center gap-2">
+            <button type="submit" disabled={updateClaimMutation.isPending} className="flex-[2] rounded-2xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-black/20 hover:bg-blue-700 flex items-center justify-center gap-2">
               {updateClaimMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save Improvements
             </button>
