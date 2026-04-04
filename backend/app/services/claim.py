@@ -96,7 +96,7 @@ def analyze_claim(db: Session, id: int) -> Optional[Claim]:
                 evidence_text += f"{i+1}. TYPE: {m.type}\n"
                 evidence_text += f"   TRANSCRIPTION: {m.transcription_text}\n"
 
-    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    client = OpenAI(api_key=settings.OPENAI_API_KEY.strip())
     
     prompt = f"""
     You are a professional fact-checker. Analyze the following claim based ONLY on the provided evidence.

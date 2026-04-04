@@ -63,7 +63,7 @@ def analyze_research_content(text: str, focus_entity: Optional[str] = None) -> D
             "bias": "Unknown"
         }
     
-    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    client = OpenAI(api_key=settings.OPENAI_API_KEY.strip())
     
     focus_instruction = ""
     if focus_entity:
