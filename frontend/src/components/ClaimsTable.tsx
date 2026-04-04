@@ -101,11 +101,12 @@ export function ClaimsTable({ claims }: ClaimsTableProps) {
                   >
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-3">
-                        {isExpanded ? (
-                          <ChevronDown className="h-4 w-4 text-slate-400 shrink-0" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4 text-slate-400 shrink-0" />
-                        )}
+                        <ChevronRight 
+                          className={cn(
+                            "h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300",
+                            isExpanded && "rotate-90 text-blue-600"
+                          )} 
+                        />
                         <span className="font-medium text-slate-900 line-clamp-1">{claim.description}</span>
                         {claim.poi && (
                           <div className="flex items-center gap-2 shrink-0">

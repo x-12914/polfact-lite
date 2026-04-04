@@ -96,26 +96,26 @@ export function WebScraper() {
               disabled={loading}
             />
           </div>
-          <div className="flex gap-4">
-            <div className="relative group">
+          <div className="flex flex-wrap gap-4 min-w-fit">
+            <div className="relative group min-w-[160px]">
               <select 
                 value={numResults}
                 onChange={(e) => setNumResults(Number(e.target.value))}
                 disabled={loading}
-                className="input-premium input-with-icon px-6 py-4 appearance-none cursor-pointer pr-12 min-w-[140px]"
+                className="input-premium px-6 py-4 appearance-none cursor-pointer pr-12 w-full !bg-slate-50 border-slate-200"
               >
                 <option value={10}>10 Results</option>
                 <option value={20}>20 Results</option>
                 <option value={50}>50 Results</option>
               </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
                 <Filter className="h-4 w-4" />
               </div>
             </div>
             <button
               type="submit"
               disabled={!query.trim() || loading}
-              className="btn-premium btn-primary flex-1 md:flex-none !px-8 shadow-blue-500/20"
+              className="btn-premium btn-primary flex-1 sm:flex-none !px-10 shadow-blue-500/20 whitespace-nowrap"
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Globe className="h-5 w-5" />}
               Execute Search

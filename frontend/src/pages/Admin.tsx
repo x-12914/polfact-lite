@@ -149,13 +149,13 @@ export function Admin() {
       </div>
 
       <div className="card-premium !p-0 overflow-hidden shadow-xl shadow-black/5">
-        <div className="border-b border-slate-100 bg-slate-50/50 px-8 py-5 flex items-center justify-between">
+        <div className="border-b border-slate-800 bg-slate-900 px-8 py-5 flex items-center justify-between">
           <div className="relative w-80 group">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
             <input 
               type="text" 
               placeholder={`Search across ${activeSection}...`}
-              className="input-premium input-with-icon !bg-white border-slate-200 shadow-sm"
+              className="input-premium input-with-icon !bg-slate-950 !border-slate-800 !text-slate-100 placeholder:text-slate-600 shadow-inner"
             />
           </div>
         </div>

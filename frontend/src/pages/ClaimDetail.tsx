@@ -15,7 +15,8 @@ import {
   X,
   ShieldCheck,
   Globe,
-  Wand2
+  Wand2,
+  Clock
 } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -163,6 +164,8 @@ export function ClaimDetail() {
         return <AlertCircle className="h-8 w-8 text-rose-600" />;
       case 'partial':
         return <AlertCircle className="h-8 w-8 text-amber-600" />;
+      case 'ongoing':
+        return <Clock className="h-8 w-8 text-blue-600 animate-pulse-slow" />;
       default:
         return <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />;
     }
@@ -265,8 +268,8 @@ export function ClaimDetail() {
           <div className="card-premium !p-0 overflow-hidden">
             <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-slate-50/50">
               <div>
-                <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Evidence Repository</h2>
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Foundational Intelligence</p>
+                <h2 className="text-[10px] font-black text-slate-800 uppercase tracking-[0.2em]">Evidence Repository</h2>
+                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Foundational Intelligence</p>
               </div>
               <div className="flex items-center gap-3">
                 {((claim.media?.length ?? 0) > 0 || (claim.sources?.length ?? 0) > 0) && (
@@ -298,8 +301,8 @@ export function ClaimDetail() {
             </div>
 
             <div className="space-y-4">
-              {claim.media?.length === 0 && claim.sources?.length === 0 && (
-                <div className="p-12 text-center text-slate-400 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 italic text-sm">
+               {claim.media?.length === 0 && claim.sources?.length === 0 && (
+                <div className="p-12 text-center text-slate-500 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 italic font-medium text-sm">
                    Wait! No media or source evidence attached yet.
                 </div>
               )}
@@ -458,10 +461,6 @@ export function ClaimDetail() {
             </div>
           </div>
 
-          <button className="btn-premium btn-primary w-full !py-4 shadow-xl shadow-blue-500/20">
-            <Share2 className="h-5 w-5" />
-            Generate Intelligence Report
-          </button>
         </div>
       </div>
 
