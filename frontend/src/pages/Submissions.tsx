@@ -44,18 +44,18 @@ export function Submissions() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Media Submissions</h1>
-          <p className="mt-1 text-slate-500">Upload evidence for automated transcription and AI analysis.</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Media Submissions</h1>
+          <p className="mt-1 text-slate-500 dark:text-slate-400 font-medium">Upload evidence for automated transcription and AI analysis.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Upload Section */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-bold flex items-center gap-2">
+        <div className="card-premium">
+          <h2 className="mb-4 text-xl font-bold flex items-center gap-2 dark:text-slate-100">
             <Plus className="h-5 w-5 text-blue-600" /> New Submission
           </h2>
-          <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-12 text-center transition-colors hover:bg-slate-50">
+          <div className="rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/40 p-12 text-center transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/60">
             <input 
               type="file" 
               id="file-upload" 
@@ -63,13 +63,13 @@ export function Submissions() {
               onChange={(e) => setFile(e.target.files?.[0] || null)}
             />
             <label htmlFor="file-upload" className="cursor-pointer">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
                 <Upload className="h-8 w-8 text-blue-600" />
               </div>
-              <p className="mt-4 text-lg font-bold text-slate-900">
+              <p className="mt-4 text-lg font-black text-slate-900 dark:text-white leading-tight">
                 {file ? file.name : 'Click to select or drag and drop'}
               </p>
-              <p className="text-sm text-slate-500">Video, Audio, or Images accepted</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Video, Audio, or Images accepted</p>
             </label>
 
             {file && (
@@ -77,13 +77,13 @@ export function Submissions() {
                 <div className="text-left">
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Link to Existing Claim (Optional)</label>
                   <select 
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:outline-none shadow-sm"
                     value={claimId || ''}
                     onChange={(e) => setClaimId(e.target.value ? Number(e.target.value) : undefined)}
                   >
-                    <option value="">No specific claim (General Evidence)</option>
+                    <option value="" className="dark:bg-slate-900 text-slate-500">No specific claim (General Evidence)</option>
                     {claimsList?.map((c: any) => (
-                      <option key={c.id} value={c.id}>ID {c.id}: {c.description.substring(0, 50)}...</option>
+                      <option key={c.id} value={c.id} className="dark:bg-slate-900">ID {c.id}: {c.description.substring(0, 50)}...</option>
                     ))}
                   </select>
                 </div>
@@ -91,7 +91,7 @@ export function Submissions() {
                 <div className="flex justify-center gap-3">
                   <button 
                     onClick={() => setFile(null)}
-                    className="rounded-xl bg-slate-200 px-6 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-300 transition-all"
+                    className="rounded-xl bg-slate-100 dark:bg-slate-800 px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-transparent dark:border-slate-700"
                   >
                     Cancel
                   </button>
@@ -127,7 +127,7 @@ export function Submissions() {
                 </div>
               )}
               {(mediaList as any)?.map((media: any) => (
-                <div key={media.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition-all">
+                <div key={media.id} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 p-4 shadow-sm hover:shadow-md transition-all">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className={cn(
@@ -138,10 +138,10 @@ export function Submissions() {
                         {media.type === 'video' ? <Play className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
                       </div>
                       <div>
-                        <div className="font-bold text-slate-900 truncate max-w-[200px]">
+                        <div className="font-black text-slate-900 dark:text-slate-100 truncate max-w-[200px]">
                           {media.file_url.split('/').pop()}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-slate-500 uppercase tracking-tight">
+                        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-tight font-bold">
                           <span>{media.type}</span>
                           <span className={cn(
                             "flex items-center gap-1 font-bold",
@@ -165,8 +165,8 @@ export function Submissions() {
                   </div>
                   
                   {media.transcription_text && (
-                    <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
-                      <div className="mb-2 font-bold text-xs uppercase text-slate-400">Transcription & Analysis</div>
+                    <div className="mt-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 p-4 text-sm text-slate-700 dark:text-slate-300">
+                      <div className="mb-2 font-black text-[10px] uppercase text-slate-400 dark:text-slate-500 tracking-widest">Transcription & Analysis</div>
                       <div className="max-h-32 overflow-y-auto whitespace-pre-wrap mb-4">
                         {media.transcription_text}
                       </div>
@@ -179,15 +179,15 @@ export function Submissions() {
                             .split('\n')
                             .filter((line: string) => /^\d+\./.test(line.trim()))
                             .map((claim: string, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between gap-3 p-2 rounded-lg bg-white border border-slate-100 group">
-                                <span className="text-xs text-slate-600 line-clamp-1">{claim.replace(/^\d+\.\s*/, '')}</span>
+                              <div key={idx} className="flex items-center justify-between gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 group">
+                                <span className="text-xs text-slate-600 dark:text-slate-400 line-clamp-1">{claim.replace(/^\d+\.\s*/, '')}</span>
                                 <button 
                                   onClick={() => {
                                     setSelectedClaimText(claim.replace(/^\d+\.\s*/, ''));
                                     setSelectedMediaUrl(media.file_url);
                                     setShowAddClaimModal(true);
                                   }}
-                                  className="flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-600 hover:bg-blue-600 hover:text-white transition-all whitespace-nowrap"
+                                  className="flex items-center gap-1.5 rounded-md bg-blue-50 dark:bg-blue-900/30 px-2 py-1 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 dark:hover:text-white transition-all whitespace-nowrap"
                                 >
                                   <Plus className="h-3 w-3" /> Add
                                 </button>
