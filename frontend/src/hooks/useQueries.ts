@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPOIs, getPOIFull, getClaims, getSources, getStats, getRecentActivity } from '../services/api';
+import { getPOIs, getPOIFull, getClaims, getSources, getStats, getRecentActivity, getRecentMedia } from '../services/api';
 
 export function usePOIs() {
   return useQuery({
@@ -45,5 +45,13 @@ export function useSources(claimId?: number) {
   return useQuery({
     queryKey: ['sources', claimId || 'all'],
     queryFn: () => getSources(claimId),
+  });
+}
+
+export function useMedia() {
+  return useQuery({
+    queryKey: ['media'],
+    queryFn: () => getRecentMedia(),
+    refetchInterval: 5000, // Frequent updates for arrivals
   });
 }

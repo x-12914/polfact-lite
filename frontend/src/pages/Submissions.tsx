@@ -1,209 +1,207 @@
 import { useState } from 'react';
-import { Upload, FileText, CheckCircle2, Loader2, Play, Plus, Clock, AlertCircle } from 'lucide-react';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { useClaims } from '../hooks/useQueries';
-import { uploadMedia, getRecentMedia } from '../services/api';
+import { useMedia, useClaims } from '../hooks/useQueries';
+import { 
+  Plus, 
+  FileText, 
+  Play, 
+  Image as ImageIcon, 
+  File as FileIcon,
+  Loader2,
+  Search,
+  History,
+  CheckCircle2,
+  AlertCircle,
+  Database,
+  Activity,
+  Layers,
+  Sparkles,
+  ArrowRight
+} from 'lucide-react';
 import { AddToPOIModal } from '../components/ui/AddToPOIModal';
 import { cn } from '../utils/cn';
+import { getMediaUrl } from '../utils/url';
+import { analyzeMedia } from '../services/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function Submissions() {
-  const [file, setFile] = useState<File | null>(null);
-  const [claimId, setClaimId] = useState<number | undefined>(undefined);
+  const { data: mediaItems, isLoading } = useMedia();
+  const [searchTerm, setSearchTerm] = useState('');
   const [showAddClaimModal, setShowAddClaimModal] = useState(false);
   const [selectedClaimText, setSelectedClaimText] = useState('');
   const [selectedMediaUrl, setSelectedMediaUrl] = useState('');
   const queryClient = useQueryClient();
-  const { data: claimsList } = useClaims(undefined);
 
-  const { data: mediaList, isLoading: loadingMedia } = useQuery({
-    queryKey: ['media'],
-    queryFn: () => getRecentMedia(20),
-    refetchInterval: 5000, // Poll for transcription status
-  });
-
-  const uploadMutation = useMutation({
-    mutationFn: async ({ file, claimId }: { file: File, claimId?: number }) => {
-      const type = file.type.includes('image') ? 'image' : 
-                   file.type.includes('video') ? 'video' : 
-                   file.type.includes('audio') ? 'audio' : 'pdf';
-      return uploadMedia(file, type, claimId);
-    },
+  const analyzeMutation = useMutation({
+    mutationFn: (mediaId: number) => analyzeMedia(mediaId),
     onSuccess: () => {
-      setFile(null);
-      setClaimId(undefined);
       queryClient.invalidateQueries({ queryKey: ['media'] });
-      queryClient.invalidateQueries({ queryKey: ['claim'] });
     }
   });
 
-  const handleUpload = () => {
-    if (file) uploadMutation.mutate({ file, claimId });
-  };
+  const filteredMedia = mediaItems?.filter((m: any) => 
+    m.file_url.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.transcription_text?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center gap-6 animate-pulse">
+        <Activity className="h-16 w-16 text-indigo-500 animate-spin" />
+        <p className="text-sm font-black text-slate-500 uppercase tracking-widest">Scanning Signal Feed...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-12 animate-fade-in-up">
+      {/* Header Intel */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Media Submissions</h1>
-          <p className="mt-1 text-slate-500 dark:text-slate-400 font-medium">Upload evidence for automated transcription and AI analysis.</p>
+          <div className="flex items-center gap-3 mb-2">
+             <Layers className="h-4 w-4 text-indigo-500" />
+             <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Material Intelligence</span>
+          </div>
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Signal Processor</h1>
+          <p className="mt-4 text-sm font-medium text-slate-500 max-w-xl leading-relaxed">
+            Raw media ingest from mobile and desktop endpoints. Automated AI transcription and claim extraction protocols are active.
+          </p>
+        </div>
+        
+        <div className="flex-shrink-0 w-full md:w-80">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search Signal Archive..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-14 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 pl-12 pr-6 text-sm font-medium transition-all focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Upload Section */}
-        <div className="card-premium">
-          <h2 className="mb-4 text-xl font-bold flex items-center gap-2 dark:text-slate-100">
-            <Plus className="h-5 w-5 text-blue-600" /> New Submission
-          </h2>
-          <div className="rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/40 p-12 text-center transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/60">
-            <input 
-              type="file" 
-              id="file-upload" 
-              className="hidden" 
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-            />
-            <label htmlFor="file-upload" className="cursor-pointer">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700">
-                <Upload className="h-8 w-8 text-blue-600" />
-              </div>
-              <p className="mt-4 text-lg font-black text-slate-900 dark:text-white leading-tight">
-                {file ? file.name : 'Click to select or drag and drop'}
-              </p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Video, Audio, or Images accepted</p>
-            </label>
-
-            {file && (
-              <div className="mt-8 space-y-4">
-                <div className="text-left">
-                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Link to Existing Claim (Optional)</label>
-                  <select 
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:outline-none shadow-sm"
-                    value={claimId || ''}
-                    onChange={(e) => setClaimId(e.target.value ? Number(e.target.value) : undefined)}
-                  >
-                    <option value="" className="dark:bg-slate-900 text-slate-500">No specific claim (General Evidence)</option>
-                    {claimsList?.map((c: any) => (
-                      <option key={c.id} value={c.id} className="dark:bg-slate-900">ID {c.id}: {c.description.substring(0, 50)}...</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex justify-center gap-3">
-                  <button 
-                    onClick={() => setFile(null)}
-                    className="rounded-xl bg-slate-100 dark:bg-slate-800 px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-transparent dark:border-slate-700"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    onClick={handleUpload}
-                    disabled={uploadMutation.isPending}
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all disabled:opacity-50"
-                  >
-                    {uploadMutation.isPending ? (<Loader2 className="h-4 w-4 animate-spin" />) : (<CheckCircle2 className="h-4 w-4" />)}
-                    Submit Evidence
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+      {!filteredMedia?.length ? (
+        <div className="rounded-[40px] border-2 border-dashed border-slate-800 bg-slate-900/40 p-24 text-center">
+          <Database className="h-16 w-16 mx-auto mb-6 text-slate-700 opacity-50" />
+          <h3 className="text-xl font-bold text-slate-400 uppercase tracking-wider">Feed Empty</h3>
+          <p className="mt-4 text-xs font-black uppercase text-slate-600 tracking-[0.2em]">Upload signals via investigating investigators or mobile app.</p>
         </div>
-
-        {/* Recent Submissions List */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Clock className="h-5 w-5 text-slate-400" /> Recent Uploads
-          </h2>
-          
-          {loadingMedia ? (
-            <div className="flex h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {(mediaList as any)?.length === 0 && (
-                <div className="p-12 text-center text-slate-500 rounded-2xl border border-dashed border-slate-200 bg-white">
-                  No submissions yet.
+      ) : (
+        <div className="grid grid-cols-1 gap-6">
+          {filteredMedia.map((media: any) => (
+            <div key={media.id} className="card-intel !p-0 glass-surface overflow-hidden group">
+              <div className="flex flex-col lg:flex-row min-h-[220px]">
+                
+                {/* Visual Signal */}
+                <div className="w-full lg:w-72 bg-slate-100 dark:bg-slate-950/50 relative overflow-hidden flex items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-800">
+                  {media.type === 'image' ? (
+                    <img 
+                      src={getMediaUrl(media.file_url)} 
+                      alt="" 
+                      className="h-full w-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700" 
+                    />
+                  ) : media.type === 'video' ? (
+                    <div className="flex flex-col items-center gap-4 text-slate-500">
+                      <Play className="h-12 w-12 opacity-40 group-hover:text-indigo-400 group-hover:opacity-100 transition-all duration-500" />
+                      <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-white">Active Signal</span>
+                    </div>
+                  ) : (
+                    <FileIcon className="h-12 w-12 text-slate-700" />
+                  )}
+                  <div className="absolute top-4 left-4">
+                     <span className="badge-hud badge-hud-ongoing !bg-[#020617] !border-slate-800">
+                        {media.type}
+                     </span>
+                  </div>
                 </div>
-              )}
-              {(mediaList as any)?.map((media: any) => (
-                <div key={media.id} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 p-4 shadow-sm hover:shadow-md transition-all">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-xl",
-                        media.type === 'video' ? "bg-purple-50 text-purple-600" :
-                        media.type === 'image' ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-600"
-                      )}>
-                        {media.type === 'video' ? <Play className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
-                      </div>
-                      <div>
-                        <div className="font-black text-slate-900 dark:text-slate-100 truncate max-w-[200px]">
-                          {media.file_url.split('/').pop()}
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-tight font-bold">
-                          <span>{media.type}</span>
+
+                {/* Content Analysis */}
+                <div className="flex-1 p-8 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                       <div className="flex items-center gap-6">
+                          <div>
+                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Source Index</p>
+                             <p className="text-xs font-black text-indigo-400 truncate max-w-[200px]">{media.file_url}</p>
+                          </div>
+                          <div className="h-8 w-px bg-slate-800/60" />
+                          <div>
+                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Timestamp</p>
+                             <p className="text-xs font-black text-slate-300">{new Date(media.created_at).toLocaleDateString()}</p>
+                          </div>
+                       </div>
+                       
+                       <div className="flex items-center gap-3">
                           <span className={cn(
-                            "flex items-center gap-1 font-bold",
-                            media.transcription_status === 'completed' ? "text-emerald-600" :
-                            media.transcription_status === 'failed' ? "text-rose-600" : "text-amber-600"
+                            "badge-hud",
+                            media.transcription_status === 'completed' ? 'badge-hud-fulfilled' : 'badge-hud-ongoing'
                           )}>
-                            {media.transcription_status === 'processing' && <Loader2 className="h-3 w-3 animate-spin" />}
-                            {media.transcription_status}
+                            {media.transcription_status || 'analyzing'}
                           </span>
-                        </div>
+                          
+                          {(!media.transcription_text || !media.transcription_text.includes('EXTRACTED CLAIMS:')) && (
+                            <button 
+                              onClick={() => analyzeMutation.mutate(media.id)}
+                              disabled={analyzeMutation.isPending}
+                              className="h-10 px-4 flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/10"
+                            >
+                              {analyzeMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                              AI Extract
+                            </button>
+                          )}
+                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                         <History className="h-3 w-3" /> Processed Text Analysis
+                      </p>
+                      <div className="max-h-32 overflow-y-auto scrollbar-custom text-slate-200 text-sm font-medium leading-[1.8] bg-[#020617] p-6 rounded-2xl border border-slate-800/60 relative italic opacity-80 group-hover:opacity-100 transition-opacity">
+                        {media.transcription_text || 'Transcription signal pending extraction...'}
                       </div>
                     </div>
-                    <a 
-                      href={media.file_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-xs font-bold text-blue-600 hover:underline"
-                    >
-                      View Original
-                    </a>
                   </div>
-                  
-                  {media.transcription_text && (
-                    <div className="mt-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 p-4 text-sm text-slate-700 dark:text-slate-300">
-                      <div className="mb-2 font-black text-[10px] uppercase text-slate-400 dark:text-slate-500 tracking-widest">Transcription & Analysis</div>
-                      <div className="max-h-32 overflow-y-auto whitespace-pre-wrap mb-4">
-                        {media.transcription_text}
+
+                  {media.transcription_text?.includes('EXTRACTED CLAIMS:') && (
+                    <div className="mt-8 pt-8 border-t border-slate-800/40">
+                      <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-4 ml-1 flex items-center gap-2">
+                         <ArrowRight className="h-3 w-3" /> Promote Extracted Claims
                       </div>
-                      
-                      {media.transcription_text.includes('EXTRACTED CLAIMS:') && (
-                        <div className="space-y-2 border-t border-slate-200 pt-4">
-                          <div className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-2">Actions: Promote Claims</div>
-                          {media.transcription_text
-                            .split('EXTRACTED CLAIMS:')[1]
-                            .split('\n')
-                            .filter((line: string) => /^\d+\./.test(line.trim()))
-                            .map((claim: string, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between gap-3 p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 group">
-                                <span className="text-xs text-slate-600 dark:text-slate-400 line-clamp-1">{claim.replace(/^\d+\.\s*/, '')}</span>
-                                <button 
-                                  onClick={() => {
-                                    setSelectedClaimText(claim.replace(/^\d+\.\s*/, ''));
-                                    setSelectedMediaUrl(media.file_url);
-                                    setShowAddClaimModal(true);
-                                  }}
-                                  className="flex items-center gap-1.5 rounded-md bg-blue-50 dark:bg-blue-900/30 px-2 py-1 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 dark:hover:text-white transition-all whitespace-nowrap"
-                                >
-                                  <Plus className="h-3 w-3" /> Add
-                                </button>
-                              </div>
-                            ))
-                          }
-                        </div>
-                      )}
+                      <div className="flex flex-wrap gap-3">
+                        {media.transcription_text
+                          .split('EXTRACTED CLAIMS:')[1]
+                          .split('\n')
+                          .filter((line: string) => /^\d+\./.test(line.trim()))
+                          .map((claim: string, idx: number) => {
+                            const claimText = claim.replace(/^\d+\.\s*/, '');
+                            return (
+                              <button 
+                                key={idx} 
+                                onClick={() => {
+                                  setSelectedClaimText(claimText);
+                                  setSelectedMediaUrl(media.file_url);
+                                  setShowAddClaimModal(true);
+                                }}
+                                className="group/btn flex items-center gap-3 p-2.5 pr-4 rounded-xl bg-[#020617] border border-slate-800 hover:border-indigo-500/50 hover:bg-indigo-600/5 transition-all text-left max-w-xs"
+                              >
+                                <div className="h-8 w-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center flex-shrink-0 group-hover/btn:bg-indigo-600 group-hover/btn:text-white transition-all">
+                                   <Plus className="h-3.5 w-3.5" />
+                                </div>
+                                <span className="text-[11px] font-bold text-slate-400 line-clamp-1 group-hover/btn:text-slate-100 uppercase tracking-wide">{claimText}</span>
+                              </button>
+                            );
+                          })
+                        }
+                      </div>
                     </div>
                   )}
                 </div>
-              ))}
+              </div>
             </div>
-          )}
+          ))}
         </div>
-      </div>
+      )}
 
       <AddToPOIModal 
         isOpen={showAddClaimModal}

@@ -2,9 +2,31 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #6d28d9;
+  --color-brand-800: #5b21b6;
+  --color-brand-900: #4c1d95;
+  --color-brand-950: #2e1065;
+
+  --color-intel-950: #020617;
+  --color-intel-900: #0f172a;
+  --color-intel-800: #1e293b;
+  --color-intel-700: #334155;
+  
+  --shadow-premium: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
+  --shadow-premium-xl: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
 
   color-scheme: light;
@@ -20,109 +42,98 @@
 .dark {
   color-scheme: dark;
   color: #f8fafc;
-  background-color: #0f172a;
+  background-color: #020617;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  @apply bg-slate-50 text-slate-900 transition-colors duration-200;
+  @apply bg-slate-50 text-slate-900 transition-colors duration-300 ease-out selection:bg-indigo-500/30;
 }
 
 .dark body {
-  @apply bg-slate-900 text-slate-50;
+  @apply bg-[#020617] text-slate-100;
 }
 
-/* Base dark mode adjustments for existing components */
-.dark .bg-white {
-  background-color: #1e293b !important; /* slate-800 */
+/* Glassmorphism Surface */
+.glass-surface {
+  @apply backdrop-blur-md bg-white/80 border border-white/20 shadow-premium;
 }
 
-.dark .text-slate-900, .dark .text-slate-800 {
-  color: #f1f5f9 !important; /* slate-100 */
+.dark .glass-surface {
+  @apply backdrop-blur-xl bg-slate-900/40 border border-white/5 shadow-premium-xl;
 }
 
-.dark .text-slate-700 {
-  color: #e2e8f0 !important; /* slate-200 */
+/* Premium Navigation Item */
+.nav-item-active {
+  @apply bg-indigo-600/10 text-indigo-400 border-r-2 border-indigo-500 shadow-[2px_0_15px_-5px_rgba(99,102,241,0.5)];
 }
 
-.dark .text-slate-600 {
-  color: #cbd5e1 !important; /* slate-300 */
+/* Status Badges - HUD Style */
+.badge-hud {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm;
 }
 
-.dark .text-slate-500 {
-  color: #94a3b8 !important; /* slate-400 */
+.badge-hud-fulfilled { @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10; }
+.badge-hud-partial { @apply bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10; }
+.badge-hud-unfulfilled { @apply bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-rose-500/10; }
+.badge-hud-ongoing { @apply bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-blue-500/10 animate-pulse; }
+
+/* UI Elements */
+.card-intel {
+  @apply rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] hover:border-slate-300;
 }
 
-.dark .border-slate-200 {
-  border-color: #334155 !important; /* slate-700 */
+.dark .card-intel {
+  @apply border-slate-800/50 bg-[#0f172a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] hover:border-slate-700/60 hover:shadow-indigo-500/5;
 }
 
-.dark .bg-slate-50 {
-  background-color: #0f172a !important; /* slate-900 */
+.btn-intel {
+  @apply relative inline-flex items-center justify-center gap-2.5 rounded-2xl px-6 py-3.5 text-xs font-black uppercase tracking-[0.1em] text-white transition-all duration-300 active:scale-[0.97] disabled:opacity-50 shadow-lg;
 }
 
-.dark .bg-slate-100 {
-  background-color: #1e293b !important; /* slate-800 */
+.btn-intel-primary {
+  @apply bg-indigo-600 hover:bg-indigo-500 hover:shadow-indigo-500/30;
 }
 
-.dark .bg-slate-200\/50 {
-  background-color: rgba(30, 41, 59, 0.5) !important;
+.btn-intel-secondary {
+  @apply bg-slate-800 hover:bg-slate-700 hover:shadow-slate-500/10 border border-slate-700;
 }
 
-.dark .border-slate-100 {
-  border-color: #334155 !important;
+/* Investigation Textarea */
+.input-intel {
+  @apply w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 font-medium;
 }
 
-.dark input, .dark select, .dark textarea {
-  background-color: #1e293b !important;
-  border-color: #334155 !important;
-  color: #f1f5f9 !important;
+.dark .input-intel {
+  @apply border-slate-800 bg-[#020617] text-slate-100 focus:ring-indigo-500/10 focus:border-indigo-500/40;
 }
 
-.dark .shadow-sm {
-  @apply shadow-none;
+/* Animations */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* UI Polish Utilities */
-.btn-premium {
-  @apply relative inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-black/10;
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
 }
 
-.btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 hover:shadow-blue-500/10;
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #020617;
 }
 
-.card-premium {
-  @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md hover:border-slate-300;
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
 }
 
-.dark .card-premium {
-  @apply border-slate-700 bg-slate-800 hover:border-slate-600 hover:shadow-none;
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.input-premium {
-  @apply w-full rounded-xl border border-slate-200 bg-white pl-4 pr-4 py-2.5 text-sm text-slate-900 transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50;
-}
-
-.dark .input-premium {
-  @apply border-slate-700 bg-slate-900 text-slate-100 focus:ring-blue-500/20 focus:border-blue-500/40;
-}
-
-.input-with-icon {
-  padding-left: 2.75rem !important;
-}
-
-.control-bar {
-  @apply flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8;
-}
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
 }

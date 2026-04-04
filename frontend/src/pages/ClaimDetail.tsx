@@ -16,7 +16,13 @@ import {
   ShieldCheck,
   Globe,
   Wand2,
-  Clock
+  Clock,
+  History,
+  Activity,
+  FileSearch,
+  MessageSquareQuote,
+  Database,
+  User as UserIcon
 } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -132,17 +138,18 @@ export function ClaimDetail() {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-12 w-12 animate-spin text-indigo-500" />
       </div>
     );
   }
 
   if (error || !claim) {
     return (
-      <div className="rounded-lg bg-rose-50 p-6 text-rose-700">
-        <h2 className="text-lg font-bold">Error loading claim</h2>
-        <p>The claim might have been deleted or doesn't exist.</p>
-        <button onClick={() => navigate('/claims')} className="mt-4 font-bold underline">Back to Claims</button>
+      <div className="rounded-3xl bg-rose-500/10 p-12 text-rose-400 border border-rose-500/20 max-w-2xl mx-auto text-center animate-fade-in-up">
+        <AlertCircle className="h-16 w-16 mx-auto mb-6 opacity-80" />
+        <h2 className="text-2xl font-black uppercase tracking-tight">Signal Lost</h2>
+        <p className="mt-4 text-sm font-medium opacity-70">The investigation record with ID {id} was not found or has been purged.</p>
+        <button onClick={() => navigate('/claims')} className="mt-8 btn-intel bg-rose-600 hover:bg-rose-500">Back to Console</button>
       </div>
     );
   }
@@ -150,44 +157,44 @@ export function ClaimDetail() {
   const getVerdictIcon = () => {
     switch (claim.status) {
       case 'fulfilled':
-        return <CheckCircle className="h-8 w-8 text-emerald-600" />;
+        return <CheckCircle className="h-10 w-10 text-emerald-500" />;
       case 'unfulfilled':
-        return <AlertCircle className="h-8 w-8 text-rose-600" />;
+        return <AlertCircle className="h-10 w-10 text-rose-500" />;
       case 'partial':
-        return <AlertCircle className="h-8 w-8 text-amber-600" />;
+        return <AlertCircle className="h-10 w-10 text-amber-500" />;
       case 'ongoing':
-        return <Clock className="h-8 w-8 text-blue-600 animate-pulse-slow" />;
+        return <Activity className="h-10 w-10 text-indigo-500 animate-pulse" />;
       default:
-        return <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />;
+        return <Loader2 className="h-10 w-10 text-indigo-500 animate-spin" />;
     }
   };
 
   const getVerdictColor = () => {
     switch (claim.status) {
-      case 'fulfilled':
-        return 'bg-emerald-100 text-emerald-800';
-      case 'unfulfilled':
-        return 'bg-rose-100 text-rose-800';
-      case 'partial':
-        return 'bg-amber-100 text-amber-800';
-      default:
-        return 'bg-blue-100 text-blue-800';
+      case 'fulfilled': return 'badge-hud-fulfilled';
+      case 'unfulfilled': return 'badge-hud-unfulfilled';
+      case 'partial': return 'badge-hud-partial';
+      default: return 'badge-hud-ongoing';
     }
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="rounded-lg p-2 hover:bg-slate-100 transition-colors">
-            <ArrowLeft className="h-5 w-5 text-slate-600" />
+    <div className="space-y-12 animate-fade-in-up">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
+        <div className="flex items-center gap-6">
+          <button onClick={() => navigate(-1)} className="h-14 w-14 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-lg transition-all hover:translate-x-[-4px]">
+            <ArrowLeft className="h-6 w-6 text-slate-600 dark:text-slate-400" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Claim Details</h1>
-            <p className="mt-2 text-slate-600 font-bold uppercase text-[10px] tracking-widest">ID: {claim.id} • {new Date(claim.created_at).toLocaleDateString()}</p>
+            <div className="flex items-center gap-3 mb-1">
+              <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Live Investigation</span>
+              <span className="h-1 w-1 rounded-full bg-slate-300" />
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{new Date(claim.created_at).toLocaleDateString()}</span>
+            </div>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Claim #{claim.id}</h1>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {canEdit && (
             <>
               <button 
@@ -196,306 +203,285 @@ export function ClaimDetail() {
                     deleteClaimMutation.mutate();
                   }
                 }}
-                className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors"
+                className="h-14 w-14 flex items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/5 group"
+                title="Purge Investigation"
               >
-                <Trash2 className="h-4 w-4" />
-                Delete Claim
+                <Trash2 className="h-6 w-6" />
               </button>
-                <button 
-                  onClick={() => setShowEditModal(true)}
-                  className="btn-premium btn-primary"
-                >
-                  <Edit className="h-4 w-4" />
-                  Edit Claim
-                </button>
+              <button 
+                onClick={() => setShowEditModal(true)}
+                className="btn-intel btn-intel-primary !bg-indigo-600 h-14"
+              >
+                <Edit className="h-5 w-5" />
+                Edit Record
+              </button>
             </>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-8">
-          <div className="card-premium">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Verdict & AI Intelligence</h2>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-10">
+          
+          {/* Main Intelligence Card */}
+          <div className="card-intel glass-surface relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.03] scale-[4] rotate-12 pointer-events-none">
+              <ShieldCheck className="h-64 w-64" />
+            </div>
+            
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+              <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 shadow-inner">
+                <div className="transform scale-110">{getVerdictIcon()}</div>
+                <div>
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 italic opacity-60">Verified Signal</div>
+                  <span className={cn("badge-hud", getVerdictColor())}>
+                    {claim.status}
+                  </span>
+                </div>
+              </div>
+
               {canEdit && (
                 <button 
                   onClick={() => analyzeMutation.mutate()}
                   disabled={analyzeMutation.isPending}
-                  className="btn-premium !bg-slate-900 !py-2 !px-4 hover:!bg-slate-800"
+                  className="btn-intel !bg-[#020617] h-12 hover:shadow-indigo-500/20 border border-slate-800"
                 >
-                  {analyzeMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
-                  AI Analyze
+                  {analyzeMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4 text-indigo-400" />}
+                  AI Intel Refresh
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
-              <div className="transform scale-125">{getVerdictIcon()}</div>
-              <div>
-                <span className={cn("inline-block rounded-full px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em]", getVerdictColor())}>
-                  {claim.status}
-                </span>
-                <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest italic opacity-60">Verified by Hub AI Engine</p>
+
+            <div className="space-y-6">
+              <h3 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                <MessageSquareQuote className="h-3 w-3" /> Foundational Statement
+              </h3>
+              <div className="relative pl-12 pr-6">
+                <div className="absolute left-0 top-0 h-full w-1.5 rounded-full bg-gradient-to-b from-indigo-500 to-transparent opacity-50" />
+                <p className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white leading-[1.2] italic">
+                  "{claim.description}"
+                </p>
               </div>
             </div>
+
             {claim.ai_insight && (
-              <div className="mt-8">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1">AI Reasoning Analysis</h3>
-                <div className="text-slate-100 text-sm font-medium leading-relaxed bg-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-800 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
-                  {claim.ai_insight}
+              <div className="mt-12 pt-12 border-t border-slate-800/30">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                  <Activity className="h-3 w-3" /> AI Reasoning Analysis
+                </h3>
+                <div className="text-slate-200 text-sm font-medium leading-relaxed bg-[#020617] p-8 rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden backdrop-blur-3xl">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500/40 shadow-[0_0_20px_0_rgba(99,102,241,0.5)]" />
+                  <div className="whitespace-pre-wrap">{claim.ai_insight}</div>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="card-premium !p-8">
-            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Original Statement</h2>
-            <blockquote className="border-l-4 border-blue-600 pl-8 text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight tracking-tight">
-              "{claim.description}"
-            </blockquote>
-          </div>
-
-          <div className="card-premium !p-0 overflow-hidden">
-            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50">
-              <div>
-                <h2 className="text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-[0.2em]">Evidence Repository</h2>
-                <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">Foundational Intelligence</p>
-              </div>
-              <div className="flex items-center gap-3">
-                {((claim.media?.length ?? 0) > 0 || (claim.sources?.length ?? 0) > 0) && (
-                  <button 
-                    onClick={handleDeleteAllEvidence}
-                    className="btn-premium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 !text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 !py-2 !px-4"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Clear
-                  </button>
+          {/* Evidence Grid */}
+          <div className="space-y-6">
+             <div className="flex items-center justify-between px-2">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center">
+                    <Database className="h-6 w-6 text-indigo-500" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Evidence Repository</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Primary Signals & Verification Sources</p>
+                  </div>
+                </div>
+                {canEdit && (
+                   <div className="flex gap-2">
+                      <button 
+                         onClick={handleDeleteAllEvidence}
+                         className="h-10 w-10 flex items-center justify-center rounded-xl border border-rose-500/30 text-rose-500/60 hover:bg-rose-500 hover:text-white transition-all transition-all"
+                         title="Purge Evidence Only"
+                      >
+                         <Trash2 className="h-4 w-4" />
+                      </button>
+                      <label className="btn-intel btn-intel-primary !py-2.5 !px-4 cursor-pointer">
+                        <Upload className="h-4 w-4" />
+                        Capture Material
+                        <input type="file" className="hidden" onChange={handleFileUpload} />
+                      </label>
+                   </div>
                 )}
-                <div className="relative">
-                  <input 
-                    type="file" 
-                    id="claim-media-upload" 
-                    className="hidden" 
-                    onChange={handleFileUpload}
-                    disabled={isUploading}
-                  />
-                  <label 
-                    htmlFor="claim-media-upload"
-                    className="btn-premium btn-primary !py-2 !px-4 cursor-pointer"
-                  >
-                    {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                    Add Evidence
-                  </label>
-                </div>
-              </div>
-            </div>
+             </div>
 
-            <div className="space-y-4">
-               {claim.media?.length === 0 && claim.sources?.length === 0 && (
-                <div className="p-12 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/40 italic font-medium text-sm">
-                   Wait! No media or source evidence attached yet.
-                </div>
-              )}
-              {claim.media?.map((m: any) => (
-                <div key={`media-${m.id}`} className="group rounded-2xl border border-slate-100 bg-white p-5 hover:border-blue-200 hover:shadow-md transition-all">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "flex h-12 w-12 items-center justify-center rounded-2xl shadow-inner",
-                        m.type === 'video' ? "bg-purple-50 text-purple-600" :
-                        m.type === 'image' ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-600"
-                      )}>
-                        {m.type === 'video' ? <Play className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">{m.type}</div>
-                        <a 
-                          href={getMediaUrl(m.file_url)} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="font-bold text-slate-900 hover:text-blue-600 truncate max-w-[300px] block transition-colors"
-                        >
-                          {m.file_url.split('/').pop()}
-                        </a>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "rounded-full px-3 py-1 text-[10px] font-bold uppercase",
-                        m.transcription_status === 'completed' ? "bg-emerald-100 text-emerald-800" : 
-                        m.transcription_status?.includes('error') ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"
-                      )}>
-                        {m.transcription_status}
-                      </div>
-                      {canEdit && (
-                        <button 
-                          onClick={() => handleDeleteMedia(m.id)}
-                          className="p-2 text-slate-300 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  {m.transcription_text && (
-                    <div className="mt-5 rounded-2xl bg-slate-900 p-6 text-xs text-slate-300 max-h-64 overflow-y-auto whitespace-pre-wrap border border-slate-800 shadow-2xl leading-relaxed">
-                      <div className="mb-3 font-bold text-[9px] uppercase text-slate-500 tracking-[0.2em] border-b border-slate-800 pb-2">Transcription & Automated Analysis</div>
-                      {m.transcription_text}
-                    </div>
-                  )}
-                </div>
-              ))}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               {/* Media Items */}
+               {claim.media?.map((m) => (
+                 <div key={m.id} className="group card-intel p-4 !rounded-2xl flex items-center gap-5 glass-surface">
+                   <div className="relative h-16 w-16 flex-shrink-0 rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center border border-slate-700">
+                     {m.type === 'image' ? (
+                       <img src={getMediaUrl(m.file_url)} className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                     ) : m.type === 'video' ? (
+                        <Play className="h-6 w-6 text-indigo-400" />
+                     ) : (
+                        <FileSearch className="h-6 w-6 text-slate-500" />
+                     )}
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">{m.type}</p>
+                     <p className="text-xs font-bold text-slate-300 truncate opacity-80 group-hover:opacity-100">{m.file_url.split('-').pop()}</p>
+                   </div>
+                   {canEdit && (
+                     <button onClick={() => handleDeleteMedia(m.id)} className="h-10 w-10 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 text-rose-500 transition-all">
+                       <X className="h-4 w-4" />
+                     </button>
+                   )}
+                 </div>
+               ))}
 
-              {claim.sources?.map((s: any) => (
-                <div key={`source-${s.id}`} className="group rounded-2xl border border-slate-100 bg-white p-5 hover:border-emerald-200 hover:shadow-md transition-all">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-inner">
-                        <Globe className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">{s.type}</div>
-                        <h4 className="font-bold text-slate-900">{s.title}</h4>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase text-emerald-800">
-                        {Math.round(s.credibility_score * 100)}% Trusted
-                      </div>
-                      {canEdit && (
-                        <button 
-                          onClick={() => handleDeleteSource(s.id)}
-                          className="p-2 text-slate-300 hover:text-rose-600 transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {s.link && (
-                    <a 
-                      href={s.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="mt-4 flex items-center gap-2 text-xs font-bold text-blue-600 hover:underline"
-                    >
-                      <LinkIcon className="h-3 w-3" /> View Source Document
-                    </a>
-                  )}
+               {/* Source Items */}
+               {claim.sources?.map((s) => (
+                 <div key={s.id} className="group card-intel p-4 !rounded-2xl flex items-center gap-5 glass-surface">
+                   <div className="h-16 w-16 flex-shrink-0 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center">
+                     <Globe className="h-6 w-6 text-indigo-400" />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Authenticated Source</p>
+                      <p className="text-xs font-bold text-slate-300 truncate leading-snug group-hover:text-white transition-colors">{s.title || s.link || 'Verified Intel'}</p>
+                      <p className="text-[9px] text-slate-500 mt-1 font-bold truncate opacity-60 italic">{s.link}</p>
+                   </div>
+                   <div className="flex flex-col items-end gap-2">
+                     {canEdit && (
+                       <button onClick={() => handleDeleteSource(s.id)} className="h-8 w-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 text-rose-500 transition-all">
+                         <X className="h-4 w-4" />
+                       </button>
+                     )}
+                     <a href={s.link || '#'} target="_blank" rel="noreferrer" className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-800 text-slate-400 hover:text-indigo-400 transition-all shadow-inner">
+                        <LinkIcon className="h-3 w-3" />
+                     </a>
+                   </div>
+                 </div>
+               ))}
 
-                  {s.content && (
-                    <div className="mt-5 relative">
-                      <div className="absolute -left-2 top-0 bottom-0 w-1 bg-emerald-400 rounded-full" />
-                      <blockquote className="pl-4 text-sm text-slate-600 italic leading-relaxed">
-                        "{s.content}"
-                      </blockquote>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+               {!claim.media?.length && !claim.sources?.length && (
+                 <div className="col-span-full py-16 text-center rounded-3xl border-2 border-dashed border-slate-800 bg-slate-900/20">
+                   <Upload className="h-10 w-10 mx-auto mb-4 text-slate-700" />
+                   <p className="text-sm font-bold text-slate-600">No Intelligence Indexed</p>
+                   <p className="text-[10px] uppercase font-black text-slate-800 mt-2 tracking-widest">Awaiting Primary Verification Uploads</p>
+                 </div>
+               )}
+             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="font-bold text-slate-900 mb-6 text-sm uppercase tracking-widest flex items-center gap-2">
-               <LinkIcon className="h-4 w-4 text-blue-600" /> Evidence Index
-            </h3>
-            <div className="space-y-3">
-              {/* Media Files as Sources */}
-              {claim.media?.map((m: any) => (
-                <div key={`idx-${m.id}`} className="group flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <a 
-                      href={getMediaUrl(m.file_url)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 flex-1 truncate"
-                    >
-                       {m.type === 'video' ? <Play className="h-4 w-4 text-purple-600" /> : <FileText className="h-4 w-4 text-blue-600" />}
-                       <div className="flex-1 truncate">
-                          <div className="text-[11px] font-bold text-slate-900 truncate">{m.file_url.split('/').pop()}</div>
-                          <div className="text-[9px] text-slate-400 uppercase font-bold tracking-wider capitalize">{m.type}</div>
-                       </div>
-                    </a>
-                    {canEdit && (
-                      <button onClick={() => handleDeleteMedia(m.id)} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-600 transition-all p-1">
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                </div>
-              ))}
-              
-              {/* External Sources as Evidence */}
-              {claim.sources?.map((s: any) => (
-                <div key={`src-idx-${s.id}`} className="group flex items-center justify-between gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                    <div className="flex items-center gap-3 flex-1 truncate">
-                        <Globe className="h-4 w-4 text-emerald-600" />
-                        <div className="flex-1 truncate">
-                          <div className="text-[11px] font-bold text-slate-900 truncate">{s.title}</div>
-                          <div className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">{s.type}</div>
-                        </div>
-                    </div>
-                    {canEdit && (
-                      <button onClick={() => handleDeleteSource(s.id)} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-600 transition-all p-1">
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                </div>
-              ))}
-              
-              {(!claim.media || claim.media.length === 0) && (!claim.sources || claim.sources.length === 0) && (
-                <div className="text-xs text-slate-400 text-center py-8 italic">No evidence indexed.</div>
-              )}
-            </div>
-          </div>
+        {/* Sidebar Intel */}
+        <div className="space-y-8">
+           <div className="card-intel !p-8 bg-[#020617] border-slate-800">
+             <h3 className="text-[12px] font-black text-white uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
+               <History className="h-4 w-4 text-indigo-500" /> Investigation Log
+             </h3>
+             <div className="space-y-8 relative">
+               <div className="absolute left-[15px] top-2 bottom-2 w-px bg-slate-800" />
+               
+               <div className="flex gap-6 relative">
+                 <div className="h-8 w-8 rounded-full bg-[#020617] border-2 border-indigo-500/50 flex items-center justify-center z-10 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                   <div className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+                 </div>
+                 <div>
+                    <p className="text-[11px] font-black text-white uppercase tracking-wider">Entity Initialized</p>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase mt-0.5 tracking-widest">{new Date(claim.created_at).toLocaleString()}</p>
+                 </div>
+               </div>
 
+               <div className="flex gap-6 relative">
+                 <div className="h-8 w-8 rounded-full bg-[#020617] border-2 border-slate-700 flex items-center justify-center z-10 shadow-inner">
+                   <div className="h-1.5 w-1.5 rounded-full bg-slate-600" />
+                 </div>
+                 <div>
+                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider">Awaiting Analysis</p>
+                    <p className="text-[9px] font-bold text-slate-600 uppercase mt-0.5 tracking-widest">Protocol Staged</p>
+                 </div>
+               </div>
+             </div>
+             
+             <button className="w-full mt-12 btn-intel btn-intel-secondary !py-4 opacity-50 cursor-not-allowed">
+                View Detailed Event Chronology
+             </button>
+           </div>
+
+           <div className="card-intel !p-8 glass-surface">
+              <h3 className="text-[12px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                 <ShieldCheck className="h-4 w-4 text-indigo-600" /> Network Context
+              </h3>
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                 <div className="flex items-center gap-4 mb-4">
+                    <div className="h-10 w-10 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center border border-slate-300 dark:border-slate-700 overflow-hidden">
+                       <UserIcon className="h-5 w-5 text-slate-400" />
+                    </div>
+                    <div>
+                       <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Subject Zero</p>
+                       <Link to={`/poi/${claim.poi?.id}`} className="text-xs font-black text-slate-900 dark:text-white hover:text-indigo-400 transition-colors uppercase tracking-wider">{claim.poi?.name || 'Unidentified'}</Link>
+                    </div>
+                 </div>
+                 <div className="h-px w-full bg-slate-200 dark:bg-slate-800 my-4" />
+                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.15em] mb-1">Confidence</p>
+                       <p className="text-sm font-black text-indigo-500">{claim.confidence}%</p>
+                    </div>
+                    <div>
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.15em] mb-1">Status</p>
+                       <p className="text-xs font-black text-slate-900 dark:text-slate-200 uppercase tracking-widest">{claim.status}</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
 
-      {/* Edit Claim Modal */}
-      <Modal isOpen={showEditModal} onClose={() => setShowEditModal(false)} title="Edit Investigation">
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          const targetEvent = e.target as any;
-          updateClaimMutation.mutate({
-            description: targetEvent.description.value,
-            status: targetEvent.status.value
-          });
-        }} className="space-y-6 pt-6">
-          <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest ml-1">Factual Statement</label>
+      <Modal isOpen={showEditModal} onClose={() => setShowEditModal(false)} title="Update Intelligence Record">
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            updateClaimMutation.mutate({
+              description: formData.get('description'),
+              status: formData.get('status')
+            });
+          }}
+          className="space-y-8"
+        >
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Claim Statement</label>
             <textarea 
-              name="description"
+              name="description" 
               defaultValue={claim.description}
+              className="input-intel min-h-[120px]"
               required
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none min-h-[160px]" 
             />
           </div>
-          <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest ml-1">Verdict Status</label>
-            <select 
-              name="status"
-              defaultValue={claim.status}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
-            >
-              <option value="ongoing">Ongoing Portfolio</option>
-              <option value="fulfilled">Fulfilled (Accurate)</option>
-              <option value="partial">Partial / Context Missing</option>
-              <option value="unfulfilled">Unfulfilled (Inaccurate)</option>
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Current Protocol Status</label>
+            <select name="status" defaultValue={claim.status} className="input-intel h-14">
+              <option value="ongoing">Ongoing (Active Investigation)</option>
+              <option value="fulfilled">Fulfilled (Verified True)</option>
+              <option value="partial">Mostly True (Partial Signal)</option>
+              <option value="unfulfilled">Unfulfilled (Disproven/False)</option>
             </select>
           </div>
           <div className="flex gap-4 pt-4">
-            <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 rounded-2xl bg-slate-100 px-4 py-4 text-sm font-bold text-slate-500 hover:bg-slate-200">Cancel</button>
-            <button type="submit" disabled={updateClaimMutation.isPending} className="flex-[2] rounded-2xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-black/20 hover:bg-blue-700 flex items-center justify-center gap-2">
-              {updateClaimMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              Save Improvements
+            <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 btn-intel btn-intel-secondary h-14">Cancel</button>
+            <button type="submit" disabled={updateClaimMutation.isPending} className="flex-[2] btn-intel btn-intel-primary h-14">
+              {updateClaimMutation.isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Save Modifications'}
             </button>
           </div>
         </form>
       </Modal>
+
+      {isUploading && (
+        <div className="fixed bottom-10 right-10 z-[100] animate-fade-in-up">
+           <div className="glass-surface p-6 rounded-2xl flex items-center gap-4 border-indigo-500/20 shadow-indigo-500/10">
+              <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
+              <div>
+                 <p className="text-xs font-black text-white uppercase tracking-widest">Injesting Material...</p>
+                 <p className="text-[9px] text-slate-500 font-bold tracking-widest mt-0.5">Encrypting & Processing Signal</p>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
