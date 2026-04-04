@@ -133,6 +133,9 @@ export function ClaimsList() {
                 </div>
               </div>
             </div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-50 group-hover:bg-blue-600 text-slate-300 group-hover:text-white transition-all shadow-inner shadow-black/5 group-hover:shadow-blue-500/20">
+              <ChevronRight className="h-6 w-6" />
+            </div>
           </div>
         ))}
         {filteredClaims?.length === 0 && (
