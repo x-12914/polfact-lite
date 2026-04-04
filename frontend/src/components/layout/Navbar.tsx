@@ -23,8 +23,8 @@ export function Navbar() {
   };
 
   return (
-    <header className="flex h-16 w-full items-center justify-between border-b border-slate-200 bg-white px-8 shadow-sm">
-      <div className="flex w-96 max-w-lg items-center rounded-xl bg-slate-50 border border-slate-200 px-4 py-2 focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-500/50 transition-all">
+    <header className="navbar-glass flex h-16 w-full items-center justify-between px-8">
+      <div className="flex w-96 max-w-lg items-center rounded-xl bg-slate-50 dark:bg-zinc-950/50 border border-slate-200 dark:border-zinc-800 px-4 py-2 focus-within:ring-2 focus-within:ring-indigo-500/10 focus-within:border-indigo-500/50 transition-all">
         <Search className="mr-3 h-4 w-4 text-slate-400" />
         <input
           type="text"
@@ -42,7 +42,7 @@ export function Navbar() {
                 <span className="text-xs text-slate-500">{getRoleLabel()}</span>
               </div>
               <div className="flex flex-col items-center">
-                <UserCircle className="h-8 w-8 text-slate-400" />
+                <UserCircle className="h-8 w-8 text-slate-400 dark:text-zinc-500" />
                 <button 
                   onClick={handleLogout}
                   className="text-xs text-slate-500 cursor-pointer hover:text-blue-600 mt-1"

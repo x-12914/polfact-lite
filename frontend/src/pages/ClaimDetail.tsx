@@ -96,30 +96,47 @@ export function ClaimDetail() {
 
   const deleteMediaMutation = useMutation({
     mutationFn: (mediaId: number) => deleteMedia(mediaId),
+    onMutate: async (mediaId) => {
+      await queryClient.cancelQueries({ queryKey: ['claim', id] });
+      const previousClaim = queryClient.getQueryData(['claim', id]);
+      queryClient.setQueryData(['claim', id], (old: any) => ({
+        ...old,
+        media: old.media?.filter((m: any) => m.id !== mediaId)
+      }));
+      return { previousClaim };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
     },
-    onError: (error: any) => {
-      // If 404, the item is already gone, which is fine
-      if (error.response?.status === 404) {
-        queryClient.invalidateQueries({ queryKey: ['claim', id] });
-      } else {
-        alert("Failed to remove evidence. Please try again.");
+    onError: (err, mediaId, context: any) => {
+      // If 404, we don't rollback because the item is already gone
+      if ((err as any).response?.status !== 404) {
+        queryClient.setQueryData(['claim', id], context.previousClaim);
+        alert("Failed to remove evidence.");
       }
+      queryClient.invalidateQueries({ queryKey: ['claim', id] });
     }
   });
 
   const deleteSourceMutation = useMutation({
     mutationFn: (sourceId: number) => deleteSource(sourceId),
+    onMutate: async (sourceId) => {
+      await queryClient.cancelQueries({ queryKey: ['claim', id] });
+      const previousClaim = queryClient.getQueryData(['claim', id]);
+      queryClient.setQueryData(['claim', id], (old: any) => ({
+        ...old,
+        sources: old.sources?.filter((s: any) => s.id !== sourceId)
+      }));
+      return { previousClaim };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
     },
-    onError: (error: any) => {
-      if (error.response?.status === 404) {
-        queryClient.invalidateQueries({ queryKey: ['claim', id] });
-      } else {
-        alert("Failed to remove source.");
+    onError: (err, sourceId, context: any) => {
+      if ((err as any).response?.status !== 404) {
+        queryClient.setQueryData(['claim', id], context.previousClaim);
       }
+      queryClient.invalidateQueries({ queryKey: ['claim', id] });
     }
   });
 

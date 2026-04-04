@@ -45,6 +45,26 @@
   background-color: #09090b; /* Zinc 950 */
 }
 
+.dark .bg-white {
+  background-color: #18181b !important; /* Zinc 900 */
+}
+
+.dark .text-slate-900 {
+  color: #f1f5f9 !important;
+}
+
+.dark .border-slate-200, .dark .border-slate-100 {
+  border-color: #27272a !important; /* Zinc 800 */
+}
+
+.dark .bg-slate-50 {
+  background-color: #09090b !important; /* Zinc 950 */
+}
+
+.dark .bg-slate-100 {
+  background-color: #18181b !important; /* Zinc 900 */
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -63,6 +83,10 @@ body {
 
 .dark .glass-surface {
   @apply backdrop-blur-xl bg-zinc-900/60 border border-white/5 shadow-premium-xl;
+}
+
+.dark .navbar-glass {
+  @apply sticky top-0 z-40 w-full backdrop-blur-xl bg-zinc-900/80 border-b border-white/5 shadow-premium-lg;
 }
 
 /* Premium Navigation Item */
@@ -94,7 +118,11 @@ body {
 }
 
 .btn-intel-primary {
-  @apply bg-indigo-600 hover:bg-indigo-500 hover:shadow-indigo-500/30;
+  @apply bg-indigo-600 hover:bg-indigo-500 hover:shadow-indigo-500/40 shadow-indigo-500/20 active:scale-95;
+}
+
+.btn-vibrant {
+  @apply bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] px-6 py-3 rounded-xl hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/20 transition-all active:scale-95 shadow-lg shadow-indigo-500/10 border border-indigo-400/20;
 }
 
 .btn-intel-secondary {

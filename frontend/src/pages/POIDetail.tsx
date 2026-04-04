@@ -215,7 +215,7 @@ export function POIDetail() {
               </div>
               <button 
                 onClick={() => setIsAddingClaim(true)}
-                className="btn-premium btn-primary !py-2 !px-4"
+                className="btn-vibrant"
               >
                 <Plus className="h-4 w-4" /> Add Claim
               </button>
