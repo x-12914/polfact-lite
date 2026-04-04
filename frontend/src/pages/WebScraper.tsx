@@ -102,11 +102,11 @@ export function WebScraper() {
                 value={numResults}
                 onChange={(e) => setNumResults(Number(e.target.value))}
                 disabled={loading}
-                className="input-premium px-6 py-4 appearance-none cursor-pointer pr-12 w-full !bg-slate-50 border-slate-200"
+                className="input-premium px-6 py-4 appearance-none cursor-pointer pr-12 w-full shadow-sm"
               >
-                <option value={10}>10 Results</option>
-                <option value={20}>20 Results</option>
-                <option value={50}>50 Results</option>
+                <option value={10} className="dark:bg-slate-900">10 Results</option>
+                <option value={20} className="dark:bg-slate-900">20 Results</option>
+                <option value={50} className="dark:bg-slate-900">50 Results</option>
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
                 <Filter className="h-4 w-4" />

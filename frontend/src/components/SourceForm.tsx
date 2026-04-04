@@ -91,14 +91,14 @@ export function SourceForm({ claims, initialData, onSubmit, onCancel }: SourceFo
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Source Type</label>
             <div className="relative">
               <select
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none dark:bg-slate-900 shadow-sm"
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
               >
-                <option value="manifesto">Manifesto</option>
-                <option value="interview">Interview</option>
-                <option value="osint">OSINT</option>
-                <option value="media">Media</option>
+                <option value="manifesto" className="dark:bg-slate-900">Manifesto</option>
+                <option value="interview" className="dark:bg-slate-900">Interview</option>
+                <option value="osint" className="dark:bg-slate-900">OSINT</option>
+                <option value="media" className="dark:bg-slate-900">Media</option>
               </select>
             </div>
           </div>

@@ -82,7 +82,7 @@ export function ClaimsList() {
           <input
             type="text"
             placeholder="Search claims by content..."
-            className="input-premium input-with-icon !bg-slate-50 border-transparent hover:border-slate-200 focus:bg-white"
+            className="input-premium input-with-icon shadow-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -91,14 +91,14 @@ export function ClaimsList() {
         <div className="relative group">
           <Filter className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" />
           <select 
-            className="input-premium input-with-icon pr-10 appearance-none cursor-pointer !bg-slate-50 border-transparent hover:border-slate-200 focus:bg-white"
+            className="input-premium input-with-icon pr-10 appearance-none cursor-pointer shadow-sm"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="all">All Statuses</option>
-            <option value="fulfilled">Fulfilled Only</option>
-            <option value="unfulfilled">Unfulfilled Only</option>
-            <option value="ongoing">Ongoing Only</option>
+            <option value="all" className="dark:bg-slate-900">All Statuses</option>
+            <option value="fulfilled" className="dark:bg-slate-900">Fulfilled Only</option>
+            <option value="unfulfilled" className="dark:bg-slate-900">Unfulfilled Only</option>
+            <option value="ongoing" className="dark:bg-slate-900">Ongoing Only</option>
           </select>
         </div>
       </div>
@@ -132,9 +132,6 @@ export function ClaimsList() {
                   <span>Filed: {new Date(claim.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 group-hover:bg-blue-600 text-slate-300 group-hover:text-white transition-all transform group-hover:rotate-45 shadow-inner group-hover:shadow-lg group-hover:shadow-blue-500/20">
-              <ChevronRight className="h-6 w-6" />
             </div>
           </div>
         ))}

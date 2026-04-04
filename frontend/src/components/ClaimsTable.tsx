@@ -210,14 +210,14 @@ export function ClaimsTable({ claims }: ClaimsTableProps) {
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Status</label>
               <select 
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none shadow-sm"
                 value={editingClaim.status}
                 onChange={(e) => setEditingClaim({...editingClaim, status: e.target.value as any})}
               >
-                <option value="ongoing">Ongoing</option>
-                <option value="fulfilled">Fulfilled</option>
-                <option value="partial">Partial</option>
-                <option value="unfulfilled">Unfulfilled</option>
+                <option value="ongoing" className="dark:bg-slate-900">Ongoing</option>
+                <option value="fulfilled" className="dark:bg-slate-900">Fulfilled</option>
+                <option value="partial" className="dark:bg-slate-900">Partial</option>
+                <option value="unfulfilled" className="dark:bg-slate-900">Unfulfilled</option>
               </select>
             </div>
             <div className="flex justify-end gap-3 pt-4">

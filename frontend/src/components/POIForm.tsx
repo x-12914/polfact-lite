@@ -141,12 +141,12 @@ export function POIForm({ onClose, initialData }: POIFormProps) {
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Status</label>
                 <select
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none"
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none dark:bg-slate-900 shadow-sm"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                 >
-                  <option value="ongoing">Ongoing Analysis</option>
-                  <option value="completed">Analysis Completed</option>
+                  <option value="ongoing" className="dark:bg-slate-900">Ongoing Analysis</option>
+                  <option value="completed" className="dark:bg-slate-900">Analysis Completed</option>
                 </select>
               </div>
             </div>

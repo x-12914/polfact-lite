@@ -107,14 +107,14 @@ export function ClaimForm({ pois, initialData, onSubmit, onCancel }: ClaimFormPr
             <div className="relative">
               <CheckCircle2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <select
-                className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
+                className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all dark:bg-slate-900 shadow-sm"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
               >
-                <option value="ongoing">Ongoing</option>
-                <option value="fulfilled">Fulfilled</option>
-                <option value="partial">Partial</option>
-                <option value="unfulfilled">Unfulfilled</option>
+                <option value="ongoing" className="dark:bg-slate-900">Ongoing</option>
+                <option value="fulfilled" className="dark:bg-slate-900">Fulfilled</option>
+                <option value="partial" className="dark:bg-slate-900">Partial</option>
+                <option value="unfulfilled" className="dark:bg-slate-900">Unfulfilled</option>
               </select>
             </div>
           </div>
