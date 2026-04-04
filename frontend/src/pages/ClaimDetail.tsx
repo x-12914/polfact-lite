@@ -109,11 +109,16 @@ export function ClaimDetail() {
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
     },
     onError: (err, mediaId, context: any) => {
-      // If 404, we don't rollback because the item is already gone
-      if ((err as any).response?.status !== 404) {
-        queryClient.setQueryData(['claim', id], context.previousClaim);
-        alert("Failed to remove evidence.");
+      // If 404, the item is already gone, so we KEEP the optimistic state (item hidden)
+      // and DO NOT invalidate, preventing a bounce from a stale server response.
+      if ((err as any).response?.status === 404) {
+        console.log("Media already deleted (404). Keeping local state.");
+        return; 
       }
+      
+      // For other errors, rollback and notify
+      queryClient.setQueryData(['claim', id], context.previousClaim);
+      alert("Failed to remove evidence. Please try again.");
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
     }
   });
@@ -133,9 +138,10 @@ export function ClaimDetail() {
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
     },
     onError: (err, sourceId, context: any) => {
-      if ((err as any).response?.status !== 404) {
-        queryClient.setQueryData(['claim', id], context.previousClaim);
+      if ((err as any).response?.status === 404) {
+        return;
       }
+      queryClient.setQueryData(['claim', id], context.previousClaim);
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
     }
   });

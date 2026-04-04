@@ -90,7 +90,7 @@ export function AddToPOIModal({ isOpen, onClose, initialDescription, sourceUrl, 
           onClick={() => setMode('new')}
           className={cn(
             "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-xs font-bold transition-all",
-            mode === 'new' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            mode === 'new' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" : "text-slate-500 hover:text-slate-400 dark:bg-zinc-950/40"
           )}
         >
           <PlusCircle className="h-3.5 w-3.5" /> Create New Claim
@@ -99,7 +99,7 @@ export function AddToPOIModal({ isOpen, onClose, initialDescription, sourceUrl, 
           onClick={() => setMode('evidence')}
           className={cn(
             "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-xs font-bold transition-all",
-            mode === 'evidence' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            mode === 'evidence' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" : "text-slate-500 hover:text-slate-400 dark:bg-zinc-950/40"
           )}
         >
           <Link2 className="h-3.5 w-3.5" /> Add as Evidence
