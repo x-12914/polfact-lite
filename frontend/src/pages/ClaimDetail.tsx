@@ -68,6 +68,14 @@ export function ClaimDetail() {
       queryClient.invalidateQueries({ queryKey: ['claims'] });
       queryClient.invalidateQueries({ queryKey: ['pois'] });
       navigate(-1);
+    },
+    onError: (error: any) => {
+      if (error.response?.status === 404) {
+        // If it's already gone, just go back
+        navigate(-1);
+      } else {
+        alert("Failed to delete claim. Ensure you have admin permissions.");
+      }
     }
   });
 
@@ -90,6 +98,14 @@ export function ClaimDetail() {
     mutationFn: (mediaId: number) => deleteMedia(mediaId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
+    },
+    onError: (error: any) => {
+      // If 404, the item is already gone, which is fine
+      if (error.response?.status === 404) {
+        queryClient.invalidateQueries({ queryKey: ['claim', id] });
+      } else {
+        alert("Failed to remove evidence. Please try again.");
+      }
     }
   });
 
@@ -97,6 +113,13 @@ export function ClaimDetail() {
     mutationFn: (sourceId: number) => deleteSource(sourceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['claim', id] });
+    },
+    onError: (error: any) => {
+      if (error.response?.status === 404) {
+        queryClient.invalidateQueries({ queryKey: ['claim', id] });
+      } else {
+        alert("Failed to remove source.");
+      }
     }
   });
 

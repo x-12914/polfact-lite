@@ -41,8 +41,8 @@
 
 .dark {
   color-scheme: dark;
-  color: #f8fafc;
-  background-color: #020617;
+  color: #f1f5f9;
+  background-color: #09090b; /* Zinc 950 */
 }
 
 body {
@@ -62,7 +62,7 @@ body {
 }
 
 .dark .glass-surface {
-  @apply backdrop-blur-xl bg-slate-900/40 border border-white/5 shadow-premium-xl;
+  @apply backdrop-blur-xl bg-zinc-900/60 border border-white/5 shadow-premium-xl;
 }
 
 /* Premium Navigation Item */
@@ -86,7 +86,7 @@ body {
 }
 
 .dark .card-intel {
-  @apply border-slate-800/50 bg-[#0f172a] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] hover:border-slate-700/60 hover:shadow-indigo-500/5;
+  @apply border-zinc-800/50 bg-zinc-900 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] hover:border-zinc-700/60 hover:shadow-indigo-500/5;
 }
 
 .btn-intel {
@@ -98,7 +98,7 @@ body {
 }
 
 .btn-intel-secondary {
-  @apply bg-slate-800 hover:bg-slate-700 hover:shadow-slate-500/10 border border-slate-700;
+  @apply bg-zinc-800 hover:bg-zinc-700 hover:shadow-zinc-500/10 border border-zinc-700;
 }
 
 /* Investigation Textarea */
@@ -107,7 +107,7 @@ body {
 }
 
 .dark .input-intel {
-  @apply border-slate-800 bg-[#020617] text-slate-100 focus:ring-indigo-500/10 focus:border-indigo-500/40;
+  @apply border-zinc-800 bg-zinc-950 text-slate-100 focus:ring-indigo-500/10 focus:border-indigo-500/40;
 }
 
 /* Animations */
