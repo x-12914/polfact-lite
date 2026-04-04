@@ -39,9 +39,12 @@ export function ClaimDetail() {
   const { userRole } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  
-  const isAdmin = userRole === 'admin';
-  const canEdit = isAdmin;
+  const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
+  const [showScraper, setShowScraper] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isResearching, setIsResearching] = useState<string | null>(null);
 
   const { data: claim, isLoading, error } = useQuery({
     queryKey: ['claim', id],
@@ -158,6 +161,35 @@ export function ClaimDetail() {
     if (file) {
       setIsUploading(true);
       uploadMutation.mutate({ file });
+    }
+  };
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    setIsSearching(true);
+    try {
+      const { searchWeb } = await import('../services/api');
+      const results = await searchWeb(searchQuery);
+      setSearchResults(results);
+    } catch (err) {
+      alert("Search signal failed.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleResearch = async (url: string) => {
+    setIsResearching(url);
+    try {
+      const { performResearch } = await import('../services/api');
+      await performResearch(url, claim?.poi?.name);
+      queryClient.invalidateQueries({ queryKey: ['claim', id] });
+      setShowScraper(false);
+    } catch (err) {
+      alert("Research extraction failed.");
+    } finally {
+      setIsResearching(null);
     }
   };
 
@@ -335,33 +367,51 @@ export function ClaimDetail() {
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Primary Signals & Verification Sources</p>
                   </div>
                 </div>
-                {canEdit && (
-                   <div className="flex gap-2">
-                      <button 
-                         onClick={handleDeleteAllEvidence}
-                         className="h-10 w-10 flex items-center justify-center rounded-xl border border-rose-500/30 text-rose-500/60 hover:bg-rose-500 hover:text-white transition-all transition-all"
-                         title="Purge Evidence Only"
-                      >
-                         <Trash2 className="h-4 w-4" />
-                      </button>
-                      <label className="btn-intel btn-intel-primary !py-2.5 !px-4 cursor-pointer">
-                        <Upload className="h-4 w-4" />
-                        Capture Material
-                        <input type="file" className="hidden" onChange={handleFileUpload} />
-                      </label>
-                   </div>
-                )}
+                <div className="flex gap-2">
+                   <button 
+                      onClick={() => {
+                        setSearchQuery(claim.description);
+                        setShowScraper(true);
+                      }}
+                      className="btn-intel !bg-indigo-600/10 !text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600 hover:text-white h-10"
+                   >
+                      <Globe className="h-4 w-4" />
+                      OSINT Scan
+                   </button>
+                   {canEdit && (
+                      <div className="flex gap-2">
+                         <button 
+                            onClick={handleDeleteAllEvidence}
+                            className="h-10 w-10 flex items-center justify-center rounded-xl border border-rose-500/30 text-rose-500/60 hover:bg-rose-500 hover:text-white transition-all transition-all"
+                            title="Purge Evidence Only"
+                         >
+                            <Trash2 className="h-4 w-4" />
+                         </button>
+                         <label className="btn-intel btn-intel-primary !py-2.5 !px-4 cursor-pointer">
+                           <Upload className="h-4 w-4" />
+                           Capture Material
+                           <input type="file" className="hidden" onChange={handleFileUpload} />
+                         </label>
+                      </div>
+                   )}
+                </div>
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                {/* Media Items */}
                {claim.media?.map((m) => (
-                 <div key={m.id} className="group card-intel p-4 !rounded-2xl flex items-center gap-5 glass-surface">
+                 <div 
+                   key={m.id} 
+                   onClick={() => setSelectedMedia(m)}
+                   className="group card-intel p-4 !rounded-2xl flex items-center gap-5 glass-surface cursor-pointer ring-0 hover:ring-2 hover:ring-indigo-500/30"
+                 >
                    <div className="relative h-16 w-16 flex-shrink-0 rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center border border-slate-700">
                      {m.type === 'image' ? (
                        <img src={getMediaUrl(m.file_url)} className="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                      ) : m.type === 'video' ? (
-                        <Play className="h-6 w-6 text-indigo-400" />
+                        <div className="relative flex items-center justify-center">
+                           <Play className="h-6 w-6 text-indigo-400 group-hover:scale-125 transition-transform" />
+                        </div>
                      ) : (
                         <FileSearch className="h-6 w-6 text-slate-500" />
                      )}
@@ -371,7 +421,13 @@ export function ClaimDetail() {
                      <p className="text-xs font-bold text-slate-300 truncate opacity-80 group-hover:opacity-100">{m.file_url.split('-').pop()}</p>
                    </div>
                    {canEdit && (
-                     <button onClick={() => handleDeleteMedia(m.id)} className="h-10 w-10 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 text-rose-500 transition-all">
+                     <button 
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         handleDeleteMedia(m.id);
+                       }} 
+                       className="h-10 w-10 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 text-rose-500 transition-all"
+                     >
                        <X className="h-4 w-4" />
                      </button>
                    )}
@@ -515,6 +571,73 @@ export function ClaimDetail() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      <Modal isOpen={showScraper} onClose={() => setShowScraper(false)} title="Signal Interceptor (OSINT)">
+        <div className="space-y-8 pt-4">
+          <form onSubmit={handleSearch} className="flex gap-3">
+             <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input-intel flex-1"
+                placeholder="Search the global web..."
+             />
+             <button type="submit" disabled={isSearching} className="btn-intel btn-intel-primary px-8">
+               {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
+               Search
+             </button>
+          </form>
+
+          <div className="max-h-[50vh] overflow-y-auto space-y-4 pr-2 scrollbar-custom">
+             {searchResults.map((res, idx) => (
+               <div key={idx} className="p-6 rounded-2xl bg-[#020617] border border-slate-800 hover:border-indigo-500/30 transition-all">
+                  <h4 className="text-sm font-black text-white leading-snug">{res.title}</h4>
+                  <p className="text-xs text-slate-500 mt-2 line-clamp-2">{res.snippet}</p>
+                  <div className="mt-6 flex items-center justify-between">
+                     <span className="text-[10px] font-bold text-slate-600 truncate max-w-[200px]">{res.link}</span>
+                     <button 
+                        onClick={() => handleResearch(res.link)}
+                        disabled={!!isResearching}
+                        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors"
+                     >
+                        {isResearching === res.link ? <Loader2 className="h-3 w-3 animate-spin" /> : <Database className="h-3 w-3" />}
+                        Scrape Intel
+                     </button>
+                  </div>
+               </div>
+             ))}
+             {!searchResults.length && !isSearching && (
+               <div className="py-12 text-center text-slate-500 italic text-sm">
+                 Awaiting signal input...
+               </div>
+             )}
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={!!selectedMedia} onClose={() => setSelectedMedia(null)} title="Intelligence Viewer" className="max-w-5xl">
+         <div className="flex flex-col items-center justify-center bg-black/90 rounded-[32px] overflow-hidden min-h-[400px]">
+           {selectedMedia?.type === 'video' ? (
+             <video 
+                src={getMediaUrl(selectedMedia.file_url)} 
+                controls 
+                autoPlay
+                className="max-h-[70vh] w-full"
+             />
+           ) : selectedMedia?.type === 'image' ? (
+             <img 
+                src={getMediaUrl(selectedMedia.file_url)} 
+                className="max-h-[70vh] object-contain"
+             />
+           ) : (
+             <div className="p-20 text-center">
+                <FileSearch className="h-16 w-16 mx-auto mb-4 text-slate-700" />
+                <p className="text-slate-400">PDF or Document Signal. Download to view.</p>
+                <a href={getMediaUrl(selectedMedia?.file_url || '')} target="_blank" className="mt-6 inline-block btn-intel btn-intel-primary">Download File</a>
+             </div>
+           )}
+         </div>
       </Modal>
 
       {isUploading && (

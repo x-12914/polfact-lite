@@ -30,8 +30,6 @@ def get_all_media(db: Session, *, claim_id: Optional[int] = None, skip: int = 0,
 def delete_media(db: Session, *, id: int) -> Optional[Media]:
     db_obj = db.query(Media).filter(Media.id == id).first()
     if db_obj:
-        db_obj.is_deleted = True
-        db.add(db_obj)
+        db.delete(db_obj)
         db.commit()
-        db.refresh(db_obj)
     return db_obj
