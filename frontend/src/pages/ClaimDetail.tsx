@@ -260,22 +260,22 @@ export function ClaimDetail() {
 
           <div className="card-premium !p-8">
             <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Original Statement</h2>
-            <blockquote className="border-l-4 border-blue-600 pl-8 text-2xl font-black text-slate-900 leading-tight tracking-tight">
+            <blockquote className="border-l-4 border-blue-600 pl-8 text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight tracking-tight">
               "{claim.description}"
             </blockquote>
           </div>
 
           <div className="card-premium !p-0 overflow-hidden">
-            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-slate-50/50">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50">
               <div>
-                <h2 className="text-[10px] font-black text-slate-800 uppercase tracking-[0.2em]">Evidence Repository</h2>
-                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Foundational Intelligence</p>
+                <h2 className="text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-[0.2em]">Evidence Repository</h2>
+                <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-1">Foundational Intelligence</p>
               </div>
               <div className="flex items-center gap-3">
                 {((claim.media?.length ?? 0) > 0 || (claim.sources?.length ?? 0) > 0) && (
                   <button 
                     onClick={handleDeleteAllEvidence}
-                    className="btn-premium bg-white border border-slate-200 !text-rose-600 hover:bg-rose-50 !py-2 !px-4"
+                    className="btn-premium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 !text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 !py-2 !px-4"
                   >
                     <Trash2 className="h-4 w-4" />
                     Clear
@@ -302,7 +302,7 @@ export function ClaimDetail() {
 
             <div className="space-y-4">
                {claim.media?.length === 0 && claim.sources?.length === 0 && (
-                <div className="p-12 text-center text-slate-500 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 italic font-medium text-sm">
+                <div className="p-12 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/40 italic font-medium text-sm">
                    Wait! No media or source evidence attached yet.
                 </div>
               )}
