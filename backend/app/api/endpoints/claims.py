@@ -47,3 +47,10 @@ def analyze_claim(*, db: Session = Depends(deps.get_db), id: int, current_user: 
     if not claim:
         raise HTTPException(status_code=404, detail="Claim not found")
     return ResponseModel(data=claim, message="Analysis complete")
+    
+@router.delete("/{id}/clear-evidence", response_model=ResponseModel[Claim])
+def clear_claim_evidence(*, db: Session = Depends(deps.get_db), id: int, current_user: deps.User = Depends(deps.get_current_admin)) -> Any:
+    claim = claim_service.clear_claim_evidence(db, id=id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+    return ResponseModel(data=claim, message="All evidence cleared")

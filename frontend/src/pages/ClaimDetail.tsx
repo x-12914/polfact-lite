@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getClaim, uploadMedia, deleteClaim, updateClaim, deleteMedia, deleteSource, analyzeClaim } from '../services/api';
+import { getClaim, uploadMedia, deleteClaim, updateClaim, deleteMedia, deleteSource, analyzeClaim, clearClaimEvidence } from '../services/api';
 import { cn } from '../utils/cn';
 import { Modal } from '../components/ui/Modal';
 import { useAuth } from '../contexts/AuthContext';
@@ -94,6 +94,13 @@ export function ClaimDetail() {
     }
   });
 
+  const clearEvidenceMutation = useMutation({
+    mutationFn: () => clearClaimEvidence(Number(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['claim', id] });
+    }
+  });
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -118,23 +125,7 @@ export function ClaimDetail() {
     if (!claim?.media?.length && !claim?.sources?.length) return;
     
     if (window.confirm('CRITICAL: This will permanently remove ALL media files and verified sources for this investigation. Proceed?')) {
-      try {
-        // Delete media
-        if (claim?.media) {
-          for (const m of claim.media) {
-            await deleteMedia(m.id);
-          }
-        }
-        // Delete sources
-        if (claim?.sources) {
-          for (const s of claim.sources) {
-            await deleteSource(s.id);
-          }
-        }
-        queryClient.invalidateQueries({ queryKey: ['claim', id] });
-      } catch (err) {
-        alert('Failed to clear some evidence items.');
-      }
+      clearEvidenceMutation.mutate();
     }
   };
 

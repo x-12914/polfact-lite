@@ -171,3 +171,14 @@ def _mock_analyze_claim(db: Session, claim: Claim) -> Claim:
     db.commit()
     db.refresh(claim)
     return claim
+
+def clear_claim_evidence(db: Session, *, id: int) -> Optional[Claim]:
+    """Clears all media and sources for a claim."""
+    claim = get_claim(db, id=id)
+    if claim:
+        claim.media = []
+        claim.sources = []
+        db.add(claim)
+        db.commit()
+        db.refresh(claim)
+    return claim

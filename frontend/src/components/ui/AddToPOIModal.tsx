@@ -19,7 +19,7 @@ export function AddToPOIModal({ isOpen, onClose, initialDescription, sourceUrl, 
   const { data: pois, isLoading: loadingPOIs } = usePOIs();
   const [selectedPoiId, setSelectedPoiId] = useState<string>('');
   const [selectedClaimId, setSelectedClaimId] = useState<string>('');
-  const [description, setDescription] = useState(initialDescription);
+  const [description, setDescription] = useState('');
   const queryClient = useQueryClient();
 
   const { data: poiClaims, isLoading: loadingClaims } = useClaims(selectedPoiId ? parseInt(selectedPoiId) : undefined);
@@ -59,8 +59,13 @@ export function AddToPOIModal({ isOpen, onClose, initialDescription, sourceUrl, 
 
     const finalDescription = quote ? `${description}\n\nEvidence: "${quote}"` : description;
 
+    const userRefinement = description.trim();
+    const finalContent = userRefinement && userRefinement !== initialDescription
+      ? `REFINEMENT: ${userRefinement}\n\nORIGINAL AI EXTRACTION:\n${initialDescription}`
+      : initialDescription;
+
     if (mode === 'new') {
-      let submitDescription = finalDescription;
+      let submitDescription = finalContent;
       if (sourceUrl) {
         submitDescription += `\n\nSource: ${sourceUrl}`;
       }
@@ -72,7 +77,7 @@ export function AddToPOIModal({ isOpen, onClose, initialDescription, sourceUrl, 
       if (!selectedClaimId) return;
       evidenceMutation.mutate({
         claim_id: parseInt(selectedClaimId),
-        content: finalDescription,
+        content: finalContent,
         link: sourceUrl
       });
     }
@@ -155,18 +160,26 @@ export function AddToPOIModal({ isOpen, onClose, initialDescription, sourceUrl, 
           </div>
         )}
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Refined Claim Text</label>
-          <div className="relative">
-            <FileText className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-            <textarea
-              required
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none min-h-[100px] font-medium"
-              placeholder="Refine the claim text if needed..."
-            />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Original AI Extraction</label>
+            <div className="rounded-xl bg-slate-100/50 p-4 border border-slate-200/50 text-sm text-slate-600 italic font-medium leading-relaxed">
+              "{initialDescription}"
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Refinement / Context (Optional)</label>
+            <div className="relative">
+              <FileText className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <textarea
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none min-h-[80px] font-medium"
+                placeholder={mode === 'new' ? "Refine the claim statement..." : "Add notes to this piece of evidence (optional)..."}
+              />
+            </div>
           </div>
         </div>
 

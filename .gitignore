@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# Database
+*.db
+backend/polfact.db
+
+# Media/Uploads
+backend/uploads/
+frontend/public/uploads/
+
+# Node
+node_modules/
+dist/
+coverage/
+.next/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

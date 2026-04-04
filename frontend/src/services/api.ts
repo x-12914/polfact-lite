@@ -215,6 +215,11 @@ export const analyzeClaim = async (description: string, claimId: number) => {
   return data.data;
 };
 
+export const clearClaimEvidence = async (claimId: number) => {
+  const { data } = await api.delete<ResponseModel<any>>(`/claims/${claimId}/clear-evidence`);
+  return data.data;
+};
+
 export const getMedia = async (id: number) => {
   const { data } = await api.get<ResponseModel<any>>(`/media/${id}`);
   return data.data;
