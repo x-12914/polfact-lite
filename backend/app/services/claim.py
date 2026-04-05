@@ -59,10 +59,8 @@ def update_claim(db: Session, *, db_obj: Claim, obj_in: ClaimUpdate) -> Claim:
 def delete_claim(db: Session, *, id: int) -> Optional[Claim]:
     db_obj = db.query(Claim).filter(Claim.id == id).first()
     if db_obj:
-        db_obj.is_deleted = True
-        db.add(db_obj)
+        db.delete(db_obj)
         db.commit()
-        db.refresh(db_obj)
     return db_obj
 
 def analyze_claim(db: Session, id: int) -> Optional[Claim]:

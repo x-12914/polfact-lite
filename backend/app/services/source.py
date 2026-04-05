@@ -48,8 +48,6 @@ def update_source(db: Session, *, db_obj: Source, obj_in: SourceUpdate) -> Sourc
 def delete_source(db: Session, *, id: int) -> Optional[Source]:
     db_obj = db.query(Source).filter(Source.id == id).first()
     if db_obj:
-        db_obj.is_deleted = True
-        db.add(db_obj)
+        db.delete(db_obj)
         db.commit()
-        db.refresh(db_obj)
     return db_obj

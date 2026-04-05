@@ -92,7 +92,7 @@ export function WebScraper() {
               placeholder="Enter a name, claim, or topic to search..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="input-premium input-with-icon py-4"
+              className="input-premium input-with-icon py-4 pl-12"
               disabled={loading}
             />
           </div>
@@ -209,26 +209,26 @@ export function WebScraper() {
       >
         {researchResult && (
           <div className="space-y-8 pt-6">
-            <div className="flex items-center justify-between p-4 rounded-xl bg-blue-50 border border-blue-100">
+            <div className="flex items-center justify-between p-4 rounded-xl glass-surface border border-indigo-500/20">
                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                  <div className="h-8 w-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-lg">
                      <Activity className="h-5 w-5" />
                   </div>
                   <div>
-                     <div className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Analysis Mode</div>
-                     <div className="text-sm font-bold text-blue-900 capitalize">{researchResult.tone} Perspective</div>
+                     <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Analysis Mode</div>
+                     <div className="text-sm font-bold text-slate-900 dark:text-white capitalize">{researchResult.tone} Perspective</div>
                   </div>
                </div>
-               <div className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-widest">
+               <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest shadow-inner">
                   Verified Scrape
                </div>
             </div>
 
             {/* Targeted Analysis Input */}
-            <div className="rounded-2xl border border-blue-100 bg-blue-50/30 p-6 space-y-4">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-                <h3 className="text-xs font-bold text-blue-600 uppercase tracking-widest">Targeted Discovery</h3>
+                <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+                <h3 className="text-xs font-bold text-indigo-500 uppercase tracking-widest">Targeted Discovery</h3>
               </div>
               <p className="text-[11px] text-slate-500 font-medium">Focus the AI on a specific person or name to extract hidden claims.</p>
               <div className="flex gap-2">
@@ -239,22 +239,22 @@ export function WebScraper() {
                     placeholder="Enter a name (e.g. John Doe)..."
                     value={focusEntity}
                     onChange={(e) => setFocusEntity(e.target.value)}
-                    className="w-full rounded-xl border border-white bg-white/80 pl-10 pr-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none transition-all"
+                    className="input-intel w-full pl-10 h-[44px]"
                   />
                 </div>
                 <button
                   onClick={handleRefineResearch}
                   disabled={isRefining || !focusEntity.trim()}
-                  className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-50"
+                  className="btn-intel btn-intel-primary h-[44px]"
                 >
-                  {isRefining ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Activity className="h-3.5 w-3.5" />}
+                  {isRefining ? <Loader2 className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
                   Refocus
                 </button>
               </div>
               {focusEntity && researchResult && !isRefining && (
                 <button 
                   onClick={() => handleResearch(researchResult.url)}
-                  className="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest"
+                  className="text-[10px] font-bold text-slate-400 hover:text-indigo-400 transition-colors uppercase tracking-widest"
                 >
                   ← Reset to Overall Analysis
                 </button>
@@ -273,18 +273,18 @@ export function WebScraper() {
               <div className="space-y-3">
                 {researchResult.claims.map((claim, idx) => (
                   <div key={idx} className="space-y-2">
-                    <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-100 bg-white hover:border-blue-200 transition-colors group">
+                    <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-zinc-900/50 hover:border-indigo-500/30 transition-colors group">
                       <div className="flex gap-4 flex-1">
-                        <div className="h-5 w-5 flex-shrink-0 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <div className="h-5 w-5 flex-shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-[10px] font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                           {idx + 1}
                         </div>
                         <div className="space-y-1">
-                          <p className="text-sm text-slate-700 font-medium leading-relaxed">
+                          <p className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                             {typeof claim === 'string' ? claim : (claim as any).text}
                           </p>
                           <button 
                             onClick={() => setVisibleEvidence(prev => ({ ...prev, [idx]: !prev[idx] }))}
-                            className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-widest flex items-center gap-1"
+                            className="text-[10px] font-bold text-indigo-500 hover:text-indigo-400 uppercase tracking-widest flex items-center gap-1"
                           >
                             <Activity className="h-3 w-3" /> {visibleEvidence[idx] ? 'Hide Evidence' : 'Show Evidence'}
                           </button>
@@ -292,18 +292,18 @@ export function WebScraper() {
                       </div>
                       <button 
                         onClick={() => {
-                          setSelectedClaimText(claim.text);
-                          setSelectedQuote(claim.quote);
+                          setSelectedClaimText(typeof claim === 'string' ? claim : (claim as any).text);
+                          setSelectedQuote(typeof claim === 'string' ? 'No direct quote extracted.' : (claim as any).quote || 'No direct quote extracted.');
                           setShowAddClaimModal(true);
                         }}
-                        className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1.5 text-[10px] font-bold text-blue-600 hover:bg-blue-600 hover:text-white transition-all whitespace-nowrap shadow-sm active:scale-95"
+                        className="btn-intel flex items-center gap-2 !px-3 !py-1.5 shadow-sm active:scale-95"
                       >
                         <Plus className="h-3 w-3" /> Add to POI
                       </button>
                     </div>
                     
                     {visibleEvidence[idx] && (
-                      <div className="mx-4 p-4 rounded-xl bg-slate-50 border-l-4 border-blue-400 text-xs text-slate-600 italic animate-in slide-in-from-top-2 duration-200">
+                      <div className="mx-4 p-4 rounded-xl bg-slate-50 dark:bg-[#020617] border-l-4 border-indigo-500 text-xs text-slate-600 dark:text-slate-400 italic animate-in slide-in-from-top-2 duration-200">
                         "{typeof claim === 'string' ? 'No direct quote extracted.' : (claim as any).quote || 'No direct quote extracted.'}"
                       </div>
                     )}
@@ -312,13 +312,13 @@ export function WebScraper() {
               </div>
             </div>
 
-            <div className="flex gap-4 pt-6 border-t border-slate-100">
+            <div className="flex gap-4 pt-6 border-t border-slate-100 dark:border-slate-800">
               <button 
                 onClick={() => {
                   setShowResearchModal(false);
                   setResearchResult(null);
                 }}
-                className="flex-1 rounded-xl bg-slate-100 px-4 py-4 text-sm font-bold text-slate-500 hover:bg-slate-200 transition-colors"
+                className="flex-1 btn-intel btn-intel-secondary h-14"
               >
                 Close Report
               </button>
@@ -326,7 +326,7 @@ export function WebScraper() {
                 href={researchResult.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-[2] flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-black/20 hover:bg-blue-700 transition-all active:scale-95"
+                className="flex-[2] btn-intel btn-intel-primary h-14 flex items-center justify-center gap-2"
               >
                 <ExternalLink className="h-4 w-4" />
                 Read Full Source

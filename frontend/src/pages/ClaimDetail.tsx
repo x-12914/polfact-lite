@@ -454,7 +454,13 @@ export function ClaimDetail() {
                          <X className="h-4 w-4" />
                        </button>
                      )}
-                     <a href={s.link || '#'} target="_blank" rel="noreferrer" className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-800 text-slate-400 hover:text-indigo-400 transition-all shadow-inner">
+                     <a 
+                        href={s.link ? getMediaUrl(s.link) : '#'} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-8 w-8 rounded-lg flex items-center justify-center bg-slate-800 text-slate-400 hover:text-indigo-400 transition-all shadow-inner"
+                     >
                         <LinkIcon className="h-3 w-3" />
                      </a>
                    </div>
