@@ -139,6 +139,14 @@ body {
   @apply border-zinc-800 bg-zinc-950 text-slate-100 focus:ring-indigo-500/10 focus:border-indigo-500/40;
 }
 
+.input-premium {
+  @apply input-intel;
+}
+
+.input-with-icon {
+  @apply pl-12;
+}
+
 /* Animations */
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(10px); }

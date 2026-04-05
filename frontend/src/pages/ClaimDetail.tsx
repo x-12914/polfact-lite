@@ -22,13 +22,15 @@ import {
   FileSearch,
   MessageSquareQuote,
   Database,
-  User as UserIcon
+  User as UserIcon,
+  PenTool
 } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getClaim, uploadMedia, deleteClaim, updateClaim, deleteMedia, deleteSource, analyzeClaim, clearClaimEvidence, type Media } from '../services/api';
 import { cn } from '../utils/cn';
 import { Modal } from '../components/ui/Modal';
+import { SourceForm } from '../components/SourceForm';
 import { useAuth } from '../contexts/AuthContext';
 import { getMediaUrl } from '../utils/url';
 
@@ -45,6 +47,7 @@ export function ClaimDetail() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isResearching, setIsResearching] = useState<string | null>(null);
+  const [showManualSource, setShowManualSource] = useState(false);
 
   const isAdmin = userRole === 'admin';
   const canEdit = isAdmin;
@@ -383,6 +386,10 @@ export function ClaimDetail() {
                    </button>
                    {canEdit && (
                       <div className="flex gap-2">
+                         <button onClick={() => setShowManualSource(true)} className="btn-intel bg-slate-800 hover:bg-slate-700 text-slate-300 h-10">
+                            <PenTool className="h-4 w-4" />
+                            Type Intel
+                         </button>
                          <button 
                             onClick={handleDeleteAllEvidence}
                             className="h-10 w-10 flex items-center justify-center rounded-xl border border-rose-500/30 text-rose-500/60 hover:bg-rose-500 hover:text-white transition-all transition-all"
@@ -623,6 +630,16 @@ export function ClaimDetail() {
              )}
           </div>
         </div>
+      </Modal>
+
+      <Modal isOpen={showManualSource} onClose={() => setShowManualSource(false)} title="Manually Key Intelligence">
+         <div className="pt-4">
+            <SourceForm 
+               claims={[claim]} 
+               initialData={{ claim_id: claim.id }} 
+               onCancel={() => setShowManualSource(false)} 
+            />
+         </div>
       </Modal>
 
       <Modal isOpen={!!selectedMedia} onClose={() => setSelectedMedia(null)} title="Intelligence Viewer" className="max-w-5xl">
