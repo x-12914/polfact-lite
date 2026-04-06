@@ -16,6 +16,7 @@ import { ClaimDetail } from './pages/ClaimDetail.tsx';
 import { Submissions } from './pages/Submissions.tsx';
 import { WebScraper } from './pages/WebScraper.tsx';
 import { ClaimsList } from './pages/ClaimsList.tsx';
+import { VideoAnalyzer } from './pages/VideoAnalyzer.tsx';
 
 function App() {
   return (
@@ -96,6 +97,7 @@ function App() {
             <Route path="poi/:id" element={<POIDetail />} />
             <Route path="sources" element={<Sources />} />
             <Route path="pictures" element={<Pictures />} />
+            <Route path="analyzer" element={<VideoAnalyzer />} />
             <Route path="admin" element={<Admin />} />
             <Route 
               path="settings" 

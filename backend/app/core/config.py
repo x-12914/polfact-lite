@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str = "admin123"
     SERPER_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
+    SIGHTENGINE_API_USER: str = "1977380819"
+    SIGHTENGINE_API_SECRET: str = "VYKTRrxnbDiCMEKdyqEA9DddaY9cSAtF"
 
     BACKEND_CORS_ORIGINS: Union[str, List[str]] = ""
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.session import Base
@@ -19,6 +19,8 @@ class Media(Base):
     type = Column(Enum(MediaType), nullable=False)
     transcription_text = Column(String, nullable=True)
     transcription_status = Column(String, nullable=True, default="completed")
+    deepfake_status = Column(String, nullable=True)
+    deepfake_confidence = Column(Float, nullable=True)
     is_deleted = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

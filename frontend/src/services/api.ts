@@ -336,4 +336,16 @@ export const getJournalists = async (skip = 0, limit = 20): Promise<User[]> => {
   return data.data;
 };
 
+export const analyzeDeepfakeVideo = async (file: File): Promise<any> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<ResponseModel<any>>('/analysis/deepfake', formData);
+  return data.data;
+};
+
+export const getDeepfakeStatus = async (mediaId: number): Promise<any> => {
+  const { data } = await api.get<ResponseModel<any>>(`/analysis/deepfake/${mediaId}`);
+  return data.data;
+};
+
 export default api;

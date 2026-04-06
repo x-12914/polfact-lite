@@ -10,7 +10,8 @@ import {
   ShieldAlert,
   Search,
   Database,
-  BarChart3
+  BarChart3,
+  Scan
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../contexts/AuthContext';
@@ -29,6 +30,7 @@ const baseNavigation: NavItem[] = [
   { name: 'Claims', description: 'Fact Verification', href: '/claims', icon: FileCheck, roles: ['user', 'journalist', 'admin'] },
   { name: 'Sources', description: 'Evidence Archive', href: '/sources', icon: Database, roles: ['user', 'journalist', 'admin'] },
   { name: 'Media Box', description: 'Signal Processing', href: '/submissions', icon: Upload, roles: ['journalist', 'admin'] },
+  { name: 'DF Analyzer', description: 'AI Video Analysis', href: '/analyzer', icon: Scan, roles: ['user', 'journalist', 'admin'] },
 ];
 
 const journalistNavigation: NavItem[] = [

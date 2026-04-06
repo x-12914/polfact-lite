@@ -9,6 +9,8 @@ class MediaBase(BaseModel):
     type: MediaType
     transcription_text: Optional[str] = None
     transcription_status: Optional[str] = "completed"
+    deepfake_status: Optional[str] = None
+    deepfake_confidence: Optional[float] = None
 
 class MediaCreate(MediaBase):
     pass
