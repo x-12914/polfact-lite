@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, Loader2, AlertCircle, Clock, ChevronRight, Plus } from 'lucide-react';
+import { Search, Filter, Loader2, AlertCircle, Clock, ChevronRight } from 'lucide-react';
 import { useClaims, usePOIs } from '../hooks/useQueries';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -71,7 +71,6 @@ export function ClaimsList() {
           onClick={() => setIsModalOpen(true)}
           className="btn-premium btn-primary"
         >
-          <Plus className="h-5 w-5" />
           Add New Claim
         </button>
       </div>

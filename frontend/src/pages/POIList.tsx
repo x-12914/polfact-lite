@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, Loader2, Plus } from 'lucide-react';
+import { Search, Filter, Loader2 } from 'lucide-react';
 import { usePOIs } from '../hooks/useQueries';
 import { POICard } from '../components/POICard';
 import { useAuth } from '../contexts/AuthContext';
@@ -73,7 +73,7 @@ export function POIList() {
               onClick={() => setShowAddModal(true)}
               className="btn-premium btn-primary"
             >
-              <Plus className="h-4 w-4" /> Add Person
+              Add Person
             </button>
           )}
         </div>
