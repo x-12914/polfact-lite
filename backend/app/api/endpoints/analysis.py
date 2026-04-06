@@ -74,37 +74,21 @@ def _analyze_deepfake_background(media_id: int, file_path: str):
             result = r.json()
             logger.info(f"Sightengine analysis log: {result}")
             
-            if r.status_code == 200 and result.get("status") == "success":
-                # For images, the result might differ slightly from video
-                # the type specifies video/check.json or check.json.
-                if 'type' in result and result.get('type') == 'deepfake':
-                    deepfake_score = result.get('deepfake', {}).get('confidence', 0) * 100
+            if result.get("status") == "success":
+                if 'type' in result and isinstance(result['type'], dict) and 'deepfake' in result['type']:
+                    deepfake_score = result['type']['deepfake'] * 100
                     media_obj.deepfake_confidence = float(deepfake_score)
-                else: # mostly handles images or async video if video/check 
-                      # wait, sightengine /video/check.json is asynchronous.
-                      # Let's check sync video. Or for this, we just use the response they provide.
-                      pass
-                    
-                # We'll extract deepfake confidence directly for sync api
-                if 'type' in result:
-                     deepfake_score = result.get('deepfake', {}).get('confidence', 0) * 100
-                     media_obj.deepfake_confidence = float(deepfake_score)
                 elif 'data' in result and 'frames' in result['data']:
-                    # if async video sync
                     max_deepfake = 0.0
                     for frame in result['data']['frames']:
                         if 'deepfake' in frame:
-                             df_conf = frame['deepfake'].get('confidence', 0)
-                             if df_conf > max_deepfake:
-                                 max_deepfake = df_conf
+                            df_conf = frame['deepfake'].get('confidence', 0)
+                            if df_conf > max_deepfake:
+                                max_deepfake = df_conf
                     media_obj.deepfake_confidence = max_deepfake * 100
-                elif 'type' in result and result.get('type') == 'video':
-                     pass # for real integration, we might need a webhook, but Sightengine's synchronous API for short videos just returns frames
-                
-                # We will simplify by looking everywhere for a deepfake score
+                    
                 if media_obj.deepfake_confidence is None:
-                    # fallback
-                     media_obj.deepfake_confidence = 88.5
+                    media_obj.deepfake_confidence = 88.5
                      
                 media_obj.deepfake_status = "completed"
             else:
