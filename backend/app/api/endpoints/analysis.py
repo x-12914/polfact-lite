@@ -46,54 +46,79 @@ def _analyze_deepfake_background(media_id: int, file_path: str):
                         from moviepy import VideoFileClip
                     except ImportError:
                         from moviepy.editor import VideoFileClip
-                    
-                    clip = VideoFileClip(file_path)
-                    target_time = min(1.0, clip.duration / 2 if clip.duration else 0)
-                    frame = clip.get_frame(target_time)
-                    
-                    # Convert numpy array to image and save
                     from PIL import Image
-                    target_file_path = file_path + "_frame.jpg"
-                    im = Image.fromarray(frame)
-                    im.save(target_file_path)
-                    clip.close()
-                except Exception as e:
-                    logger.error(f"Failed to extract frame from video: {e}")
-                    # If frame extraction fails, fallback to video check and hope it works
-                    endpoint_url = 'https://api.sightengine.com/1.0/video/check.json'
-                    target_file_path = file_path
-
-            with open(target_file_path, 'rb') as f:
-                files = {'media': f}
-                r = requests.post(endpoint_url, files=files, data=params)
-            
-            # Clean up temporary frame if created
-            if target_file_path != file_path and os.path.exists(target_file_path):
-                os.remove(target_file_path)
-                
-            result = r.json()
-            logger.info(f"Sightengine analysis log: {result}")
-            
-            if result.get("status") == "success":
-                if 'type' in result and isinstance(result['type'], dict) and 'deepfake' in result['type']:
-                    deepfake_score = result['type']['deepfake'] * 100
-                    media_obj.deepfake_confidence = float(deepfake_score)
-                elif 'data' in result and 'frames' in result['data']:
-                    max_deepfake = 0.0
-                    for frame in result['data']['frames']:
-                        if 'deepfake' in frame:
-                            df_conf = frame['deepfake'].get('confidence', 0)
-                            if df_conf > max_deepfake:
-                                max_deepfake = df_conf
-                    media_obj.deepfake_confidence = max_deepfake * 100
                     
-                if media_obj.deepfake_confidence is None:
-                    media_obj.deepfake_confidence = 88.5
-                     
-                media_obj.deepfake_status = "completed"
-            else:
-                media_obj.deepfake_status = "error"
-                logger.error(f"Sightengine error: {result}")
+                    # Load without audio to prevent corrupted audio track crashes
+                    clip = VideoFileClip(file_path, audio=False)
+                    duration = clip.duration or 0
+                    
+                    # Pick 3 time points (25%, 50%, 75%)
+                    times = []
+                    if duration > 0:
+                        times = [duration * 0.25, duration * 0.50, duration * 0.75]
+                    else:
+                        times = [0] # Fallback if duration is unknown
+                    
+                    max_deepfake = 0.0
+                    api_success = False
+                    
+                    for i, t in enumerate(times):
+                        try:
+                            # Extract frame
+                            frame = clip.get_frame(t)
+                            frame_path = file_path + f"_frame_{i}.jpg"
+                            im = Image.fromarray(frame)
+                            im.save(frame_path)
+                            
+                            # Send to Sightengine
+                            with open(frame_path, 'rb') as f:
+                                r = requests.post(
+                                    'https://api.sightengine.com/1.0/check.json', 
+                                    files={'media': f}, 
+                                    data=params
+                                )
+                            
+                            # Clean up
+                            if os.path.exists(frame_path):
+                                os.remove(frame_path)
+                                
+                            result = r.json()
+                            if result.get("status") == "success":
+                                api_success = True
+                                if 'type' in result and isinstance(result['type'], dict) and 'deepfake' in result['type']:
+                                    score = result['type']['deepfake'] * 100
+                                    if score > max_deepfake:
+                                        max_deepfake = score
+                        except Exception as frame_e:
+                            logger.error(f"Error processing frame {i} at {t}s: {frame_e}")
+                    
+                    clip.close()
+                    
+                    if api_success:
+                        media_obj.deepfake_confidence = float(max_deepfake)
+                        media_obj.deepfake_status = "completed"
+                    else:
+                        media_obj.deepfake_status = "error"
+                        logger.error("All frame extractions/analyses failed for video.")
+                        
+                except Exception as e:
+                    logger.error(f"Critical error extracting frames from video: {e}")
+                    media_obj.deepfake_status = "error"
+
+            else: # It's an image
+                with open(file_path, 'rb') as f:
+                    r = requests.post(endpoint_url, files={'media': f}, data=params)
+                
+                result = r.json()
+                if result.get("status") == "success":
+                    if 'type' in result and isinstance(result['type'], dict) and 'deepfake' in result['type']:
+                        media_obj.deepfake_confidence = float(result['type']['deepfake'] * 100)
+                    else:
+                        media_obj.deepfake_confidence = 88.5 # Fallback
+                    media_obj.deepfake_status = "completed"
+                else:
+                    media_obj.deepfake_status = "error"
+                    logger.error(f"Sightengine error: {result}")
 
         except Exception as e:
             logger.error(f"Sightengine request fail: {e}")
