@@ -35,16 +35,42 @@ def _analyze_deepfake_background(media_id: int, file_path: str):
         
         # Determine if it's an image or video based on extension
         ext = os.path.splitext(file_path)[1].lower()
-        if ext in ['.mp4', '.avi', '.mov', '.mkv', '.webm']:
-            endpoint_url = 'https://api.sightengine.com/1.0/video/check.json'
-        else:
-            endpoint_url = 'https://api.sightengine.com/1.0/check.json'
+        is_video = ext in ['.mp4', '.avi', '.mov', '.mkv', '.webm']
+        endpoint_url = 'https://api.sightengine.com/1.0/check.json'
+        target_file_path = file_path
         
         try:
-            with open(file_path, 'rb') as f:
+            if is_video:
+                try:
+                    try:
+                        from moviepy import VideoFileClip
+                    except ImportError:
+                        from moviepy.editor import VideoFileClip
+                    
+                    clip = VideoFileClip(file_path)
+                    target_time = min(1.0, clip.duration / 2 if clip.duration else 0)
+                    frame = clip.get_frame(target_time)
+                    
+                    # Convert numpy array to image and save
+                    from PIL import Image
+                    target_file_path = file_path + "_frame.jpg"
+                    im = Image.fromarray(frame)
+                    im.save(target_file_path)
+                    clip.close()
+                except Exception as e:
+                    logger.error(f"Failed to extract frame from video: {e}")
+                    # If frame extraction fails, fallback to video check and hope it works
+                    endpoint_url = 'https://api.sightengine.com/1.0/video/check.json'
+                    target_file_path = file_path
+
+            with open(target_file_path, 'rb') as f:
                 files = {'media': f}
                 r = requests.post(endpoint_url, files=files, data=params)
             
+            # Clean up temporary frame if created
+            if target_file_path != file_path and os.path.exists(target_file_path):
+                os.remove(target_file_path)
+                
             result = r.json()
             logger.info(f"Sightengine analysis log: {result}")
             
