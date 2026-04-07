@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.api import api_router
 from app.core.config import settings
 from app.db.session import engine, Base
+import app.models
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
