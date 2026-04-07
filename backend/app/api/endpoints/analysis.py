@@ -98,7 +98,7 @@ async def analyze_deepfake(
 
     ext = os.path.splitext(file.filename)[1].lower()
     filename = f"{uuid.uuid4()}{ext}"
-    file_path = os.path.join(upload_dir, filename)
+    file_path = os.path.abspath(os.path.join(upload_dir, filename))
 
     with open(file_path, "wb") as f:
         content = await file.read()
