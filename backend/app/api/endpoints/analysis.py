@@ -39,13 +39,25 @@ async def _analyze_deepfake_background(media_id: int, file_path: str):
                         return None
                     
                     for _ in range(40): # Poll for ~3.5 mins
-                        analysis = await (rd.get_detection_result(req_id) if hasattr(rd, 'get_detection_result') else rd.get_result(request_id=req_id))
-                        status = analysis.get('status', '') if isinstance(analysis, dict) else getattr(analysis, 'status', '')
-                        if status in ['MANIPULATED', 'AUTHENTIC', 'SUCCESS']:
-                            return (analysis.get('score', 0) if isinstance(analysis, dict) else getattr(analysis, 'score', 0)) * 100
-                        if status in ['FAILED', 'ERROR']:
-                            break
-                        await asyncio.sleep(5)
+                        try:
+                            analysis = await (rd.get_detection_result(req_id) if hasattr(rd, 'get_detection_result') else rd.get_result(request_id=req_id))
+                            # Ensure we actually got a dict before parsing
+                            if not isinstance(analysis, dict):
+                                logger.warning(f"Reality Defender returned non-dict response (likely HTML error): {analysis}")
+                                await asyncio.sleep(8)
+                                continue
+
+                            status = analysis.get('status', '')
+                            logger.info(f"Reality Defender Poll: {status}")
+                            
+                            if status in ['MANIPULATED', 'AUTHENTIC', 'SUCCESS']:
+                                return (analysis.get('score', 0)) * 100
+                            if status in ['FAILED', 'ERROR']:
+                                break
+                        except Exception as poll_inner_e:
+                            logger.warning(f"Transient polling error (will retry): {poll_inner_e}")
+                            
+                        await asyncio.sleep(8) # Slightly slower polling for better rate limit compliance
                 except Exception as e:
                     logger.warning(f"Analysis iteration failed for {target_path}: {e}")
                 return None
@@ -69,6 +81,10 @@ async def _analyze_deepfake_background(media_id: int, file_path: str):
                     any_success = False
                     
                     for i, t in enumerate(times):
+                        # Give the API a moment to breathe between frames
+                        if i > 0:
+                            await asyncio.sleep(3)
+
                         frame_path = f"{file_path}_f{i}.jpg"
                         try:
                             frame = clip.get_frame(t)
