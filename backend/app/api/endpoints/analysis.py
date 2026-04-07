@@ -1,7 +1,8 @@
 import os
 import uuid
 import logging
-import requests
+import asyncio
+from realitydefender import RealityDefender
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, BackgroundTasks
 from sqlalchemy.orm import Session
@@ -16,7 +17,7 @@ from app.schemas.response import ResponseModel
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-def _analyze_deepfake_background(media_id: int, file_path: str):
+async def _analyze_deepfake_background(media_id: int, file_path: str):
     db = SessionLocal()
     try:
         media_obj = db.query(MediaModel).filter_by(id=media_id).first()
@@ -26,102 +27,52 @@ def _analyze_deepfake_background(media_id: int, file_path: str):
         media_obj.deepfake_status = "processing"
         db.commit()
 
-        # Call sightengine
-        params = {
-            'models': 'deepfake',
-            'api_user': settings.SIGHTENGINE_API_USER,
-            'api_secret': settings.SIGHTENGINE_API_SECRET
-        }
-        
-        # Determine if it's an image or video based on extension
-        ext = os.path.splitext(file_path)[1].lower()
-        is_video = ext in ['.mp4', '.avi', '.mov', '.mkv', '.webm']
-        endpoint_url = 'https://api.sightengine.com/1.0/check.json'
-        target_file_path = file_path
-        
         try:
-            if is_video:
-                try:
-                    try:
-                        from moviepy import VideoFileClip
-                    except ImportError:
-                        from moviepy.editor import VideoFileClip
-                    from PIL import Image
-                    
-                    # Load without audio to prevent corrupted audio track crashes
-                    clip = VideoFileClip(file_path, audio=False)
-                    duration = clip.duration or 0
-                    
-                    # Pick 3 time points (25%, 50%, 75%)
-                    times = []
-                    if duration > 0:
-                        times = [duration * 0.25, duration * 0.50, duration * 0.75]
-                    else:
-                        times = [0] # Fallback if duration is unknown
-                    
-                    max_deepfake = 0.0
-                    api_success = False
-                    
-                    for i, t in enumerate(times):
-                        try:
-                            # Extract frame
-                            frame = clip.get_frame(t)
-                            frame_path = file_path + f"_frame_{i}.jpg"
-                            im = Image.fromarray(frame)
-                            im.save(frame_path)
-                            
-                            # Send to Sightengine
-                            with open(frame_path, 'rb') as f:
-                                r = requests.post(
-                                    'https://api.sightengine.com/1.0/check.json', 
-                                    files={'media': f}, 
-                                    data=params
-                                )
-                            
-                            # Clean up
-                            if os.path.exists(frame_path):
-                                os.remove(frame_path)
-                                
-                            result = r.json()
-                            if result.get("status") == "success":
-                                api_success = True
-                                if 'type' in result and isinstance(result['type'], dict) and 'deepfake' in result['type']:
-                                    score = result['type']['deepfake'] * 100
-                                    if score > max_deepfake:
-                                        max_deepfake = score
-                        except Exception as frame_e:
-                            logger.error(f"Error processing frame {i} at {t}s: {frame_e}")
-                    
-                    clip.close()
-                    
-                    if api_success:
-                        media_obj.deepfake_confidence = float(max_deepfake)
-                        media_obj.deepfake_status = "completed"
-                    else:
-                        media_obj.deepfake_status = "error"
-                        logger.error("All frame extractions/analyses failed for video.")
-                        
-                except Exception as e:
-                    logger.error(f"Critical error extracting frames from video: {e}")
-                    media_obj.deepfake_status = "error"
+            rd = RealityDefender(api_key=settings.REALITY_DEFENDER_API_KEY)
+            
+            # 1. Start Upload and Analysis
+            upload_result = await rd.upload(file_path=file_path)
+            request_id = upload_result.get('id') or upload_result.get('request_id')
+            
+            if not request_id:
+                logger.error("Reality Defender upload failed: No request ID returned.")
+                media_obj.deepfake_status = "error"
+                db.commit()
+                return
 
-            else: # It's an image
-                with open(file_path, 'rb') as f:
-                    r = requests.post(endpoint_url, files={'media': f}, data=params)
-                
-                result = r.json()
-                if result.get("status") == "success":
-                    if 'type' in result and isinstance(result['type'], dict) and 'deepfake' in result['type']:
-                        media_obj.deepfake_confidence = float(result['type']['deepfake'] * 100)
-                    else:
-                        media_obj.deepfake_confidence = 88.5 # Fallback
-                    media_obj.deepfake_status = "completed"
+            # 2. Asynchronous Polling
+            max_attempts = 60 # 5 minutes maximum
+            final_status = "error"
+            final_score = 0.0
+            
+            for _ in range(max_attempts):
+                if hasattr(rd, 'get_detection_result'):
+                    analysis = await rd.get_detection_result(request_id)
+                elif hasattr(rd, 'get_result'):
+                    analysis = await rd.get_result(request_id=request_id)
                 else:
-                    media_obj.deepfake_status = "error"
-                    logger.error(f"Sightengine error: {result}")
+                    break
+                    
+                status = analysis.get('status', '') if isinstance(analysis, dict) else getattr(analysis, 'status', '')
+                logger.info(f"Reality Defender status: {status}")
+                
+                if status in ['MANIPULATED', 'AUTHENTIC', 'SUCCESS']:
+                    score = analysis.get('score', 0) if isinstance(analysis, dict) else getattr(analysis, 'score', 0)
+                    final_score = score * 100
+                    final_status = "completed"
+                    break
+                elif status in ['FAILED', 'ERROR']:
+                    logger.error("Reality Defender analysis failed remotely.")
+                    final_status = "error"
+                    break
+                    
+                await asyncio.sleep(5) # Wait before next poll
 
+            media_obj.deepfake_confidence = float(final_score)
+            media_obj.deepfake_status = final_status
+            
         except Exception as e:
-            logger.error(f"Sightengine request fail: {e}")
+            logger.error(f"Reality Defender request fail: {e}")
             media_obj.deepfake_status = "error"
             media_obj.deepfake_confidence = None
 
