@@ -30,51 +30,72 @@ async def _analyze_deepfake_background(media_id: int, file_path: str):
         try:
             rd = RealityDefender(api_key=settings.REALITY_DEFENDER_API_KEY)
             
-            # 1. Start Upload and Analysis
-            upload_result = await rd.upload(file_path=file_path)
-            request_id = upload_result.get('id') or upload_result.get('request_id')
+            async def run_rd_analysis(target_path):
+                """Helper to upload and poll for a single file"""
+                try:
+                    up = await rd.upload(file_path=target_path)
+                    req_id = up.get('id') or up.get('request_id')
+                    if not req_id:
+                        return None
+                    
+                    for _ in range(40): # Poll for ~3.5 mins
+                        analysis = await (rd.get_detection_result(req_id) if hasattr(rd, 'get_detection_result') else rd.get_result(request_id=req_id))
+                        status = analysis.get('status', '') if isinstance(analysis, dict) else getattr(analysis, 'status', '')
+                        if status in ['MANIPULATED', 'AUTHENTIC', 'SUCCESS']:
+                            return (analysis.get('score', 0) if isinstance(analysis, dict) else getattr(analysis, 'score', 0)) * 100
+                        if status in ['FAILED', 'ERROR']:
+                            break
+                        await asyncio.sleep(5)
+                except Exception as e:
+                    logger.warning(f"Analysis iteration failed for {target_path}: {e}")
+                return None
+
+            # 1. Try Whole Video First
+            logger.info(f"Attempting whole-file analysis for: {file_path}")
+            final_score = await run_rd_analysis(file_path)
             
-            if not request_id:
-                logger.error("Reality Defender upload failed: No request ID returned.")
+            # 2. Fallback to Frame Extraction if Whole Video fails or score is ambiguous
+            if final_score is None:
+                logger.info("Whole-file analysis failed or rejected. Falling back to multi-frame extraction...")
+                try:
+                    from moviepy import VideoFileClip
+                    from PIL import Image
+                    
+                    clip = VideoFileClip(file_path, audio=False)
+                    duration = clip.duration or 0
+                    times = [duration * 0.25, duration * 0.50, duration * 0.75] if duration > 0 else [0]
+                    
+                    max_frame_score = 0.0
+                    any_success = False
+                    
+                    for i, t in enumerate(times):
+                        frame_path = f"{file_path}_f{i}.jpg"
+                        try:
+                            frame = clip.get_frame(t)
+                            Image.fromarray(frame).save(frame_path)
+                            score = await run_rd_analysis(frame_path)
+                            if score is not None:
+                                any_success = True
+                                max_frame_score = max(max_frame_score, score)
+                        finally:
+                            if os.path.exists(frame_path):
+                                os.remove(frame_path)
+                    
+                    clip.close()
+                    if any_success:
+                        final_score = max_frame_score
+                except Exception as ex:
+                    logger.error(f"Fallback frame extraction failed: {ex}")
+
+            if final_score is not None:
+                media_obj.deepfake_confidence = float(final_score)
+                media_obj.deepfake_status = "completed"
+            else:
                 media_obj.deepfake_status = "error"
-                db.commit()
-                return
 
-            # 2. Asynchronous Polling
-            max_attempts = 60 # 5 minutes maximum
-            final_status = "error"
-            final_score = 0.0
-            
-            for _ in range(max_attempts):
-                if hasattr(rd, 'get_detection_result'):
-                    analysis = await rd.get_detection_result(request_id)
-                elif hasattr(rd, 'get_result'):
-                    analysis = await rd.get_result(request_id=request_id)
-                else:
-                    break
-                    
-                status = analysis.get('status', '') if isinstance(analysis, dict) else getattr(analysis, 'status', '')
-                logger.info(f"Reality Defender status: {status}")
-                
-                if status in ['MANIPULATED', 'AUTHENTIC', 'SUCCESS']:
-                    score = analysis.get('score', 0) if isinstance(analysis, dict) else getattr(analysis, 'score', 0)
-                    final_score = score * 100
-                    final_status = "completed"
-                    break
-                elif status in ['FAILED', 'ERROR']:
-                    logger.error("Reality Defender analysis failed remotely.")
-                    final_status = "error"
-                    break
-                    
-                await asyncio.sleep(5) # Wait before next poll
-
-            media_obj.deepfake_confidence = float(final_score)
-            media_obj.deepfake_status = final_status
-            
         except Exception as e:
-            logger.error(f"Reality Defender request fail: {e}")
+            logger.error(f"Reality Defender implementation error: {e}")
             media_obj.deepfake_status = "error"
-            media_obj.deepfake_confidence = None
 
         db.commit()
 

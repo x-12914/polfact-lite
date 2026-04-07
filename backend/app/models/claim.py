@@ -30,4 +30,5 @@ class Claim(Base):
     poi = relationship("POI", back_populates="claims")
     sources = relationship("Source", back_populates="claim", cascade="all, delete-orphan")
     media = relationship("Media", back_populates="claim", cascade="all, delete-orphan")
+    evidence_submissions = relationship("Evidence", back_populates="claim", cascade="all, delete-orphan")
     assigned_journalist = relationship("User", foreign_keys=[assigned_to])
