@@ -11,8 +11,14 @@ export function getMediaUrl(path: string | null | undefined): string {
     return 'https://via.placeholder.com/150?text=No+Image';
   }
 
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:') || path.startsWith('//')) {
     return path;
+  }
+
+  // Check if it's a domain-like string (e.g. example.com/...)
+  // If it contains a dot and doesn't start with a slash, it might be an external link
+  if (!path.startsWith('/') && path.includes('.') && !path.includes(' ')) {
+     return `https://${path}`;
   }
 
   // Ensure relative path starts with /

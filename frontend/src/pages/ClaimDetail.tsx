@@ -462,7 +462,7 @@ export function ClaimDetail() {
                        </button>
                      )}
                      <a 
-                        href={s.link ? getMediaUrl(s.link) : '#'} 
+                        href={s.link ? (s.link.startsWith("http") ? s.link : "https://" + s.link) : "#"} 
                         target="_blank" 
                         rel="noreferrer" 
                         onClick={(e) => e.stopPropagation()}
@@ -646,11 +646,14 @@ export function ClaimDetail() {
          <div className="flex flex-col items-center justify-center bg-black/90 rounded-[32px] overflow-hidden min-h-[400px]">
            {selectedMedia?.type === 'video' ? (
              <video 
-                src={getMediaUrl(selectedMedia.file_url)} 
-                controls 
-                autoPlay
-                className="max-h-[70vh] w-full"
-             />
+                 src={getMediaUrl(selectedMedia.file_url)} 
+                 controls 
+                 autoPlay 
+                 playsInline
+                 crossOrigin="anonymous"
+                 className="max-h-[70vh] w-full"
+                 onError={(e) => console.error("Video load failed")}
+              />
            ) : selectedMedia?.type === 'image' ? (
              <img 
                 src={getMediaUrl(selectedMedia.file_url)} 
