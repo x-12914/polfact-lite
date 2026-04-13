@@ -7,7 +7,9 @@ def create_media(db: Session, *, obj_in: MediaCreate) -> Media:
     db_obj = Media(
         claim_id=obj_in.claim_id,
         file_url=obj_in.file_url,
-        type=obj_in.type
+        type=obj_in.type,
+        transcription_status=obj_in.transcription_status,
+        transcription_text=obj_in.transcription_text,
     )
     db.add(db_obj)
     db.commit()

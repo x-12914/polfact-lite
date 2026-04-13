@@ -29,12 +29,21 @@ export function Submissions() {
   const [showAddClaimModal, setShowAddClaimModal] = useState(false);
   const [selectedClaimText, setSelectedClaimText] = useState('');
   const [selectedMediaUrl, setSelectedMediaUrl] = useState('');
+  const [analyzingId, setAnalyzingId] = useState<number | null>(null);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const analyzeMutation = useMutation({
     mutationFn: (mediaId: number) => analyzeMedia(mediaId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['media'] });
+      setAnalyzingId(null);
+    },
+    onError: (err: any) => {
+      setAnalyzingId(null);
+      const detail = err?.response?.data?.detail || 'AI extraction failed. Check OpenAI key or file path.';
+      setAnalyzeError(detail);
+      setTimeout(() => setAnalyzeError(null), 6000);
     }
   });
 
@@ -54,6 +63,14 @@ export function Submissions() {
 
   return (
     <div className="space-y-12 animate-fade-in-up">
+      {/* Error Toast */}
+      {analyzeError && (
+        <div className="fixed top-6 right-6 z-[200] animate-fade-in-up bg-rose-900/90 border border-rose-500/40 text-rose-200 text-sm font-bold px-6 py-4 rounded-2xl shadow-xl max-w-md backdrop-blur-sm">
+          <AlertCircle className="inline h-4 w-4 mr-2 text-rose-400" />
+          {analyzeError}
+        </div>
+      )}
+
       {/* Header Intel */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div>
@@ -140,13 +157,17 @@ export function Submissions() {
                             {media.transcription_status || 'analyzing'}
                           </span>
                           
-                          {(!media.transcription_text || !media.transcription_text.includes('EXTRACTED CLAIMS:')) && (
-                            <button 
-                              onClick={() => analyzeMutation.mutate(media.id)}
-                              disabled={analyzeMutation.isPending}
-                              className="h-10 px-4 flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/10"
+                          {(media.transcription_status === 'processing' || analyzingId === media.id) ? (
+                            <span className="h-10 px-4 flex items-center gap-2 rounded-xl bg-indigo-600/50 text-white text-[10px] font-black uppercase tracking-widest">
+                              <Loader2 className="h-3 w-3 animate-spin" /> Analyzing...
+                            </span>
+                          ) : (!media.transcription_text || !media.transcription_text.includes('EXTRACTED CLAIMS:')) && (
+                            <button
+                              onClick={() => { setAnalyzingId(media.id); analyzeMutation.mutate(media.id); }}
+                              disabled={analyzingId !== null}
+                              className="h-10 px-4 flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/10"
                             >
-                              {analyzeMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                              <Sparkles className="h-3 w-3" />
                               AI Extract
                             </button>
                           )}
