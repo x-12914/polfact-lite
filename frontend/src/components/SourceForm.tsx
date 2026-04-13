@@ -129,7 +129,7 @@ export function SourceForm({ claims, initialData, onSubmit, onCancel }: SourceFo
           <input
             type="text"
             required
-            className="input-intel pl-11"
+            className="input-intel pl-12"
             placeholder='e.g. "Stated in press conference, 12 Apr 2026"'
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -170,7 +170,7 @@ export function SourceForm({ claims, initialData, onSubmit, onCancel }: SourceFo
           <LinkIcon className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
           <input
             type="url"
-            className="input-intel pl-11"
+            className="input-intel pl-12"
             placeholder="https://... (leave blank if evidence is typed above)"
             value={formData.link}
             onChange={(e) => setFormData({ ...formData, link: e.target.value })}

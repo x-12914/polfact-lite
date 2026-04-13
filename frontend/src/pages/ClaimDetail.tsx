@@ -451,23 +451,10 @@ export function ClaimDetail() {
                      <Globe className="h-6 w-6 text-indigo-400" />
                    </div>
                    <div className="flex-1 min-w-0">
-                       <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
-                         <Globe className="h-3 w-3" />
-                         {s.type === 'manual' ? 'Direct Evidence' : 'Authenticated Source'}
-                       </p>
-                       <p className="text-sm font-bold text-slate-900 dark:text-white leading-snug group-hover:text-indigo-400 transition-colors">{s.title || 'Verified Intel'}</p>
-                       {s.content && (
-                         <div className="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 font-medium whitespace-pre-wrap italic line-clamp-3 group-hover:line-clamp-none transition-all">
-                           "{s.content}"
-                         </div>
-                       )}
-                       {s.link && (
-                         <p className="text-[9px] text-slate-500 mt-2 font-bold truncate opacity-60 flex items-center gap-1">
-                           <LinkIcon className="h-2 w-2" />
-                           {s.link}
-                         </p>
-                       )}
-                   </div>
+                       <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Authenticated Source</p>
+                       <p className="text-xs font-bold text-slate-300 truncate leading-snug group-hover:text-white transition-colors">{s.title || s.link || 'Verified Intel'}</p>
+                       <p className="text-[9px] text-slate-500 mt-1 font-bold truncate opacity-60 italic">{s.link}</p>
+                    </div>
                    <div className="flex flex-col items-end gap-2">
                      {canEdit && (
                        <button onClick={() => handleDeleteSource(s.id)} className="h-8 w-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 text-rose-500 transition-all">
