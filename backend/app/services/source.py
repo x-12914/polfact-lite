@@ -38,8 +38,10 @@ def update_source(db: Session, *, db_obj: Source, obj_in: SourceUpdate) -> Sourc
     if obj_in.claim_id is not None: db_obj.claim_id = obj_in.claim_id
     if obj_in.type is not None: db_obj.type = obj_in.type
     if obj_in.title is not None: db_obj.title = obj_in.title
+    if obj_in.content is not None: db_obj.content = obj_in.content
     if obj_in.link is not None: db_obj.link = obj_in.link
     if obj_in.date is not None: db_obj.date = obj_in.date
+    if obj_in.credibility_score is not None: db_obj.credibility_score = obj_in.credibility_score
     db.add(db_obj)
     db.commit()
     db.refresh(db_obj)

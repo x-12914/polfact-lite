@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Save, Loader2, FileText, Calendar, Link as LinkIcon } from 'lucide-react';
+import { Save, Loader2, FileText, Link as LinkIcon, PenTool, Tag, ShieldCheck } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createSource, updateSource, type Claim } from '../services/api';
+import { cn } from '../utils/cn';
 
 interface SourceFormProps {
   claims: Claim[];
@@ -10,24 +11,32 @@ interface SourceFormProps {
   onCancel: () => void;
 }
 
+const EVIDENCE_TYPES = [
+  { value: 'manual',    label: 'Direct Statement',  desc: 'Typed evidence or testimony' },
+  { value: 'interview', label: 'Interview',          desc: 'Quote from an interview' },
+  { value: 'manifesto', label: 'Document / Manifesto', desc: 'From a written document' },
+  { value: 'osint',     label: 'OSINT',              desc: 'Open-source intelligence' },
+  { value: 'media',     label: 'Media',              desc: 'Broadcast or publication' },
+];
+
 export function SourceForm({ claims, initialData, onSubmit, onCancel }: SourceFormProps) {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
-    claim_id: initialData?.claim_id || '',
-    title: initialData?.title || '',
-    type: initialData?.type || 'manifesto',
-    date: initialData?.date || new Date().toISOString().split('T')[0],
-    link: initialData?.link || '',
+    claim_id:  initialData?.claim_id  || '',
+    title:     initialData?.title     || '',
+    type:      initialData?.type      || 'manual',
+    content:   initialData?.content   || '',
+    link:      initialData?.link      || '',
+    date:      initialData?.date      || new Date().toISOString().split('T')[0],
   });
 
   const mutation = useMutation({
     mutationFn: (data: any) => {
-      if (initialData?.id) {
-        return updateSource(initialData.id, data);
-      }
+      if (initialData?.id) return updateSource(initialData.id, data);
       return createSource(data);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['claim', String(formData.claim_id)] });
       queryClient.invalidateQueries({ queryKey: ['sources'] });
       if (onSubmit) onSubmit(formData);
       onCancel();
@@ -40,115 +49,154 @@ export function SourceForm({ claims, initialData, onSubmit, onCancel }: SourceFo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.claim_id) {
-      alert('Please select a Claim to link this source to');
+      alert('Please select a claim to attach this evidence to.');
+      return;
+    }
+    if (!formData.content.trim() && !formData.link.trim()) {
+      alert('Please provide either evidence content or a source URL.');
       return;
     }
     mutation.mutate({
       ...formData,
-      claim_id: parseInt(formData.claim_id.toString())
+      claim_id: parseInt(formData.claim_id.toString()),
+      // send null for empty strings so backend accepts them as optional
+      content: formData.content.trim() || null,
+      link:    formData.link.trim()    || null,
     });
   };
 
-  const isLoading = mutation.isPending;
+  const selected = EVIDENCE_TYPES.find(t => t.value === formData.type);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
+
+      {/* Claim selector — only shown if multiple claims could exist */}
+      {claims.length > 1 && (
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Related Claim</label>
-          <div className="relative">
-            <select
-              required
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none"
-              value={formData.claim_id}
-              onChange={(e) => setFormData({ ...formData, claim_id: e.target.value })}
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+            Linked Claim
+          </label>
+          <select
+            required
+            className="input-intel h-12"
+            value={formData.claim_id}
+            onChange={(e) => setFormData({ ...formData, claim_id: e.target.value })}
+          >
+            <option value="">Select a claim...</option>
+            {claims.map((c) => (
+              <option key={c.id} value={c.id}>
+                #{c.id} — {c.description.substring(0, 55)}…
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* Evidence type pills */}
+      <div className="space-y-3">
+        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+          Evidence Type
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {EVIDENCE_TYPES.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => setFormData({ ...formData, type: t.value })}
+              className={cn(
+                'px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all',
+                formData.type === t.value
+                  ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+                  : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-indigo-500/40 hover:text-slate-200'
+              )}
             >
-              <option value="">Select a Claim...</option>
-              {claims.map((claim) => (
-                <option key={claim.id} value={claim.id}>{claim.description.substring(0, 60)}...</option>
-              ))}
-            </select>
-          </div>
+              {t.label}
+            </button>
+          ))}
         </div>
+        {selected && (
+          <p className="text-[10px] text-slate-600 italic ml-1">{selected.desc}</p>
+        )}
+      </div>
 
-        <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Source Title</label>
-          <div className="relative">
-            <FileText className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              required
-              className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
-              placeholder="e.g. 2023 Economic Policy Manifesto"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Source Type</label>
-            <div className="relative">
-              <select
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none dark:bg-slate-900 shadow-sm"
-                value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-              >
-                <option value="manifesto" className="dark:bg-slate-900">Manifesto</option>
-                <option value="interview" className="dark:bg-slate-900">Interview</option>
-                <option value="osint" className="dark:bg-slate-900">OSINT</option>
-                <option value="media" className="dark:bg-slate-900">Media</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Publication Date</label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="date"
-                required
-                className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Source URL</label>
-          <div className="relative">
-            <LinkIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input
-              type="url"
-              required
-              className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
-              placeholder="https://example.com/source"
-              value={formData.link}
-              onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-            />
-          </div>
+      {/* Title */}
+      <div className="space-y-2">
+        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+          Evidence Title <span className="text-rose-500">*</span>
+        </label>
+        <div className="relative">
+          <FileText className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
+          <input
+            type="text"
+            required
+            className="input-intel pl-11"
+            placeholder='e.g. "Stated in press conference, 12 Apr 2026"'
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          />
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
+      {/* Content — THE main field */}
+      <div className="space-y-2">
+        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] flex items-center gap-2">
+          <PenTool className="h-3 w-3" />
+          Evidence Content
+          <span className="text-slate-600 font-bold normal-case tracking-normal text-[9px]">— type the actual evidence here</span>
+        </label>
+        <textarea
+          className="input-intel min-h-[160px] leading-relaxed resize-y"
+          placeholder={
+            formData.type === 'interview'
+              ? '"Quote the exact statement here, including context about when and where it was said."'
+              : formData.type === 'manual'
+              ? 'Type the evidence directly. Be specific — include dates, figures, and direct quotes where possible.'
+              : 'Paste or type the relevant excerpt from the source document...'
+          }
+          value={formData.content}
+          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+        />
+        <p className="text-[9px] text-slate-600 ml-1">
+          {formData.content.length} chars{formData.content.length > 0 && formData.content.length < 20 ? ' — add more detail for stronger evidence' : ''}
+        </p>
+      </div>
+
+      {/* Optional URL */}
+      <div className="space-y-2">
+        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+          Source URL <span className="text-slate-700 font-bold normal-case tracking-normal text-[9px]">— optional</span>
+        </label>
+        <div className="relative">
+          <LinkIcon className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
+          <input
+            type="url"
+            className="input-intel pl-11"
+            placeholder="https://... (leave blank if evidence is typed above)"
+            value={formData.link}
+            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+          />
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-3 pt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-50 transition-colors"
+          className="flex-1 btn-intel btn-intel-secondary h-12"
         >
           Cancel
         </button>
         <button
           type="submit"
-          disabled={isLoading}
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
+          disabled={mutation.isPending}
+          className="flex-[2] btn-intel btn-intel-primary h-12"
         >
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {initialData?.id ? 'Update Source' : 'Save Source'}
+          {mutation.isPending
+            ? <Loader2 className="h-4 w-4 animate-spin" />
+            : <ShieldCheck className="h-4 w-4" />
+          }
+          {mutation.isPending ? 'Logging Intel...' : (initialData?.id ? 'Update Evidence' : 'Log Evidence')}
         </button>
       </div>
     </form>
