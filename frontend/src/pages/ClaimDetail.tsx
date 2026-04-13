@@ -446,15 +446,20 @@ export function ClaimDetail() {
 
                {/* Source Items */}
                {claim.sources?.map((s) => (
-                 <div key={s.id} className="group card-intel p-4 !rounded-2xl flex items-center gap-5 glass-surface">
+                 <div key={s.id} className="group card-intel p-4 !rounded-2xl flex items-center gap-5 glass-surface hover:border-indigo-500/50 transition-all cursor-pointer">
                    <div className="h-16 w-16 flex-shrink-0 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center">
                      <Globe className="h-6 w-6 text-indigo-400" />
                    </div>
-                   <div className="flex-1 min-w-0">
+                    <a 
+                       href={s.link ? (s.link.startsWith("http") ? s.link : "https://" + s.link) : "#"} 
+                       target="_blank" 
+                       rel="noreferrer" 
+                       className="flex-1 min-w-0"
+                    >
                        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Authenticated Source</p>
                        <p className="text-xs font-bold text-slate-300 truncate leading-snug group-hover:text-white transition-colors">{s.title || s.link || 'Verified Intel'}</p>
                        <p className="text-[9px] text-slate-500 mt-1 font-bold truncate opacity-60 italic">{s.link}</p>
-                    </div>
+                    </a>
                    <div className="flex flex-col items-end gap-2">
                      {canEdit && (
                        <button onClick={() => handleDeleteSource(s.id)} className="h-8 w-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-rose-500/10 text-rose-500 transition-all">

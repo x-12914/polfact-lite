@@ -42,9 +42,20 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 async def health_check():
     return {"status": "healthy", "mode": "lite"}
 
-# Serve uploaded files as static files
-os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-app.mount(f"/{settings.UPLOAD_DIR}", StaticFiles(directory=settings.UPLOAD_DIR), name=settings.UPLOAD_DIR)
+# Custom StaticFiles to inject CORS headers for media streaming
+class CORSStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        return response
+
+# Ensure UPLOAD_DIR is an absolute path to avoid PM2 CWD issues
+UPLOAD_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", settings.UPLOAD_DIR))
+os.makedirs(UPLOAD_PATH, exist_ok=True)
+
+app.mount(f"/{settings.UPLOAD_DIR}", CORSStaticFiles(directory=UPLOAD_PATH), name=settings.UPLOAD_DIR)
 
 @app.on_event("startup")
 async def startup_event():
