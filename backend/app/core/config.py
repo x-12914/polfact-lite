@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str = "admin123"
     SERPER_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
+    JINA_API_KEY: str = ""
     REALITY_DEFENDER_API_KEY: str = "rd_2852d3c04871bde0_b910fde9d9e2bb15adc77320226df0db"
 
     BACKEND_CORS_ORIGINS: Union[str, List[str]] = ""

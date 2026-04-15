@@ -14,10 +14,16 @@ def scrape_article(url: str) -> str:
     # Use Jina Reader to bypass bot detection and get clean content
     jina_url = f"https://r.jina.ai/{url}"
     
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8"
+    }
+    
+    if settings.JINA_API_KEY and settings.JINA_API_KEY.strip():
+        headers["Authorization"] = f"Bearer {settings.JINA_API_KEY.strip()}"
+        
     try:
-        response = requests.get(jina_url, timeout=20, headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        })
+        response = requests.get(jina_url, timeout=20, headers=headers)
         response.raise_for_status()
 
         text = response.text
