@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+
 from openai import OpenAI
 from app.core.config import settings
 from typing import List, Optional, Dict, Any
@@ -9,46 +9,40 @@ logger = logging.getLogger(__name__)
 
 def scrape_article(url: str) -> str:
     """
-    Scrapes the main text content from a given URL.
+    Scrapes the main text content from a given URL using Jina Reader to bypass bot protection.
     """
+    # Use Jina Reader to bypass bot detection and get clean content
+    jina_url = f"https://r.jina.ai/{url}"
+    
     try:
-        response = requests.get(url, timeout=15, headers={
+        response = requests.get(jina_url, timeout=20, headers={
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }, allow_redirects=True)
+        })
         response.raise_for_status()
 
-        # Detect common login redirects or anti-bot pages
-        lower_url = response.url.lower()
-        if "login" in lower_url or "checkpoint/lg" in lower_url or "signup" in lower_url:
-            return f"Error: Content blocked by a login wall or bot protection (Redirected to login)."
-
-        # Check if page is extremely short (common for "verify you are human" pages)
-        if len(response.text) < 500 and ("detect" in response.text.lower() or "human" in response.text.lower()):
-            return f"Error: Scraping blocked (Bot detection triggered)."
-
-        soup = BeautifulSoup(response.text, 'html.parser')
+        text = response.text
         
-        # Remove script and style elements
-        for script_or_style in soup(["script", "style", "nav", "footer", "header", "form"]):
-            script_or_style.decompose()
-            
-        # Get text
-        text = soup.get_text(separator=' ')
-        
-        # Break into lines and remove leading/trailing whitespace
+        # Jina returns markdown/text. If it failed or returned a "blocked" message:
+        if "blocked" in text.lower()[:500] and "bot" in text.lower()[:500]:
+            return f"Error: Scraping blocked (Bot detection triggered even through proxy)."
+
+        # Simple cleaning of extra whitespace
         lines = (line.strip() for line in text.splitlines())
-        # Break multi-headlines into a line each
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        # Drop blank lines
-        text = '\n'.join(chunk for chunk in chunks if chunk)
+        text = '\n'.join(line for line in lines if line)
         
         if len(text.strip()) < 100:
              return f"Error: Extracted content is too short. The page might be empty or require an account to view."
 
         # Limit to first 10,000 characters to avoid token limits
         return text[:10000]
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 403:
+            logger.error(f"403 Forbidden even with Jina Reader for {url}")
+            return f"Error: Content at {url} is strictly protected against scraping (403)."
+        logger.error(f"HTTP error scraping {url} via Jina: {e}")
+        return f"Error: Could not extract content from {url} (HTTP {e.response.status_code})."
     except Exception as e:
-        logger.error(f"Error scraping {url}: {e}")
+        logger.error(f"Error scraping {url} via Jina: {e}")
         return f"Error: Could not extract content from {url}."
 
 def analyze_research_content(text: str, focus_entity: Optional[str] = None) -> Dict[str, Any]:
