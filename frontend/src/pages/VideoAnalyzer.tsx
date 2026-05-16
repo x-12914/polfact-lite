@@ -17,10 +17,13 @@ export function VideoAnalyzer() {
       interval = setInterval(async () => {
         try {
           const res = await getDeepfakeStatus(mediaId);
-          if (res.deepfake_status === 'completed') {
-            setConfidence(res.deepfake_confidence);
+          // Check if res.data exists (based on ResponseModel)
+          const mediaData = res.data || res;
+          
+          if (mediaData.deepfake_status === 'completed') {
+            setConfidence(mediaData.deepfake_confidence);
             setStatus('completed');
-          } else if (res.deepfake_status === 'error') {
+          } else if (mediaData.deepfake_status === 'error') {
             setStatus('error');
           }
         } catch (error) {

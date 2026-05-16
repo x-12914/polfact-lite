@@ -50,7 +50,7 @@ async def _analyze_deepfake_background(media_id: int, file_path: str):
                             status = analysis.get('status', '')
                             logger.info(f"Reality Defender Poll: {status}")
                             
-                            if status in ['MANIPULATED', 'AUTHENTIC', 'SUCCESS']:
+                            if status in ['MANIPULATED', 'AUTHENTIC', 'SUCCESS', 'SUSPICIOUS', 'COMPLETED']:
                                 return (analysis.get('score', 0)) * 100
                             if status in ['FAILED', 'ERROR']:
                                 break
