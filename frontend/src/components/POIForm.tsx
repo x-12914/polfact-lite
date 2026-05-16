@@ -74,11 +74,11 @@ export function POIForm({ onClose, initialData }: POIFormProps) {
   const isLoading = mutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 className="text-xl font-bold text-slate-900">{initialData ? 'Edit Person of Interest' : 'Add Person of Interest'}</h2>
-          <button onClick={onClose} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 py-8 sm:py-12 backdrop-blur-sm">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl my-auto">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 px-6 py-4">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">{initialData ? 'Edit Person of Interest' : 'Add Person of Interest'}</h2>
+          <button onClick={onClose} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-600 dark:hover:text-white transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -87,12 +87,12 @@ export function POIForm({ onClose, initialData }: POIFormProps) {
           <div className="space-y-4">
             <div className="flex justify-center">
               <div className="relative">
-                <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-100 border-2 border-slate-200">
+                <div className="h-20 w-20 sm:h-24 sm:w-24 overflow-hidden rounded-full bg-slate-100 dark:bg-zinc-800 border-2 border-slate-200 dark:border-zinc-700">
                   {formData.profile_image ? (
                     <img src={getMediaUrl(formData.profile_image)} alt="Preview" className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-slate-400">
-                      <User className="h-10 w-10" />
+                      <User className="h-8 w-8 sm:h-10 sm:w-10" />
                     </div>
                   )}
                 </div>
@@ -105,11 +105,11 @@ export function POIForm({ onClose, initialData }: POIFormProps) {
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Full Name</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Full Name</label>
                 <input
                   type="text"
                   required
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
+                  className="mt-1 w-full rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
                   placeholder="e.g. John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -117,10 +117,10 @@ export function POIForm({ onClose, initialData }: POIFormProps) {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Location / Role</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Location / Role</label>
                 <input
                   type="text"
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
+                  className="mt-1 w-full rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
                   placeholder="e.g. London, UK / Prime Minister"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -128,10 +128,10 @@ export function POIForm({ onClose, initialData }: POIFormProps) {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Description</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Description</label>
                 <textarea
                   rows={3}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all"
+                  className="mt-1 w-full rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all resize-y"
                   placeholder="Brief background information..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -139,31 +139,31 @@ export function POIForm({ onClose, initialData }: POIFormProps) {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Status</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Status</label>
                 <select
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none dark:bg-slate-900 shadow-sm"
+                  className="mt-1 w-full rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all appearance-none shadow-sm"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                 >
-                  <option value="ongoing" className="dark:bg-slate-900">Ongoing Analysis</option>
-                  <option value="completed" className="dark:bg-slate-900">Analysis Completed</option>
+                  <option value="ongoing" className="dark:bg-zinc-900">Ongoing Analysis</option>
+                  <option value="completed" className="dark:bg-zinc-900">Analysis Completed</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <div className="mt-8 flex items-center justify-end gap-3 border-t border-slate-100 pt-6">
+          <div className="mt-6 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800 pt-6">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-50 transition-colors"
+              className="rounded-xl px-4 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-black/20 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
             >
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               {initialData ? 'Update POI' : 'Save POI'}

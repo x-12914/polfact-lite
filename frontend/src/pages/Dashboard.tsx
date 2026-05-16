@@ -32,7 +32,7 @@ export function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Dashboard Overview</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Dashboard Overview</h1>
           <p className="mt-1 text-slate-500">Real-time tracking of political accountability and fact-checking metrics.</p>
         </div>
       </div>

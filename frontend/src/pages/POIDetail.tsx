@@ -126,11 +126,11 @@ export function POIDetail() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Link to="/pois" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Persons of Interest
         </Link>
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           {canEdit && (
             <>
               <button 
@@ -164,10 +164,10 @@ export function POIDetail() {
 
       <div className="flex flex-col gap-8 lg:flex-row">
         <div className="w-full lg:w-1/3">
-          <div className="card-premium !p-8 flex flex-col items-center">
+          <div className="card-premium !p-5 sm:!p-8 flex flex-col items-center">
             <div 
               className={cn(
-                "relative group cursor-pointer h-40 w-40 overflow-hidden rounded-3xl border-4 border-white bg-slate-100 shadow-2xl transition-all duration-500",
+                "relative group cursor-pointer h-28 w-28 sm:h-40 sm:w-40 overflow-hidden rounded-2xl sm:rounded-3xl border-4 border-white bg-slate-100 shadow-2xl transition-all duration-500",
                 canEdit && "hover:ring-8 hover:ring-blue-500/10"
               )}
               onClick={handleImageClick}
@@ -191,8 +191,8 @@ export function POIDetail() {
               />
             </div>
             
-            <h1 className="mt-8 text-3xl font-black text-slate-900 tracking-tight">{poi.name}</h1>
-            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest mt-1">{poi.location || 'Unknown Location'}</p>
+            <h1 className="mt-6 sm:mt-8 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight text-center">{poi.name}</h1>
+            <p className="text-xs sm:text-sm text-slate-500 font-bold uppercase tracking-widest mt-1 text-center">{poi.location || 'Unknown Location'}</p>
             <div className="mt-6">
               <StatusBadge status={poi.status} className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em]" />
             </div>

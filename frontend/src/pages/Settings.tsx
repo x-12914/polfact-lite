@@ -30,7 +30,7 @@ export function Settings() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Settings</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Settings</h1>
         <p className="mt-1 text-slate-500">Manage your account preferences and application settings.</p>
       </div>
 
@@ -55,7 +55,7 @@ export function Settings() {
         </div>
 
         <div className="lg:col-span-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-8 shadow-sm">
             {activeTab === 'profile' && (
               <>
                 <h3 className="text-lg font-bold text-slate-900 mb-6">Profile Settings</h3>

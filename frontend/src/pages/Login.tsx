@@ -28,17 +28,17 @@ export function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-screen min-h-[100dvh] items-center justify-center bg-slate-50 dark:bg-[#020617] px-4 py-8">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-black/20">
             <ShieldCheck className="h-10 w-10 text-white" />
           </div>
-          <h1 className="mt-6 text-3xl font-bold text-slate-900">PolFact Lite</h1>
+          <h1 className="mt-6 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">PolFact Lite</h1>
           <p className="mt-2 text-slate-500">Sign in to manage political fact-checking</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="flex items-center gap-2 rounded-lg bg-rose-50 p-4 text-sm text-rose-700">

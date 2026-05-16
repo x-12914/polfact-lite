@@ -39,11 +39,11 @@ export function POIList() {
     <div className="space-y-8">
       <div className="control-bar">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Persons of Interest</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Persons of Interest</h1>
           <p className="mt-1 text-slate-500 font-medium">Monitor and analyze political figures and their claims.</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4">
           <div className="relative group">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <input

@@ -78,7 +78,7 @@ export function Submissions() {
              <Layers className="h-4 w-4 text-indigo-500" />
              <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">Material Intelligence</span>
           </div>
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Signal Processor</h1>
+          <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">Signal Processor</h1>
           <p className="mt-4 text-sm font-medium text-slate-500 max-w-xl leading-relaxed">
             Raw media ingest from mobile and desktop endpoints. Automated AI transcription and claim extraction protocols are active.
           </p>

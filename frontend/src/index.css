@@ -70,6 +70,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  min-height: 100dvh;
   @apply bg-slate-50 text-slate-900 transition-colors duration-300 ease-out selection:bg-indigo-500/30;
 }
 
@@ -105,9 +106,23 @@ body {
 .badge-hud-unfulfilled { @apply bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-rose-500/10; }
 .badge-hud-ongoing { @apply bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-blue-500/10 animate-pulse; }
 
+/* Premium Card */
+.card-premium {
+  @apply rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm transition-all duration-300 cursor-pointer hover:shadow-xl hover:translate-y-[-2px] hover:border-slate-300;
+}
+
+.dark .card-premium {
+  @apply border-zinc-800/50 bg-zinc-900 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] hover:border-zinc-700/60 hover:shadow-indigo-500/5;
+}
+
+/* Control bar - responsive header layout */
+.control-bar {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between;
+}
+
 /* UI Elements */
 .card-intel {
-  @apply rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] hover:border-slate-300;
+  @apply rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] hover:border-slate-300;
 }
 
 .dark .card-intel {
@@ -115,7 +130,7 @@ body {
 }
 
 .btn-intel {
-  @apply relative inline-flex items-center justify-center gap-2.5 rounded-2xl px-6 py-3.5 text-xs font-black uppercase tracking-[0.1em] text-white transition-all duration-300 active:scale-[0.97] disabled:opacity-50 shadow-lg;
+  @apply relative inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-3.5 text-xs font-black uppercase tracking-[0.1em] text-white transition-all duration-300 active:scale-[0.97] disabled:opacity-50 shadow-lg;
 }
 
 .btn-intel-primary {
@@ -123,12 +138,12 @@ body {
 }
 
 .btn-vibrant {
-  @apply bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] px-6 py-3 rounded-xl hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/20 transition-all active:scale-95 shadow-lg shadow-indigo-500/10 border border-indigo-400/20;
+  @apply bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/20 transition-all active:scale-95 shadow-lg shadow-indigo-500/10 border border-indigo-400/20;
 }
 
 /* Premium buttons — visible outline, smooth rounded edges */
 .btn-premium {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:shadow-md active:scale-[0.97] disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl sm:rounded-2xl border border-slate-200 px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:shadow-md active:scale-[0.97] disabled:opacity-50;
 }
 
 .dark .btn-premium {
@@ -149,7 +164,7 @@ body {
 
 /* Investigation Textarea */
 .input-intel {
-  @apply w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 font-medium;
+  @apply w-full rounded-xl sm:rounded-2xl border border-slate-200 bg-slate-50 px-4 sm:px-5 py-3 sm:py-4 text-sm text-slate-900 transition-all placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 font-medium;
 }
 
 .dark .input-intel {
@@ -157,7 +172,7 @@ body {
 }
 
 .input-premium {
-  @apply w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 font-medium;
+  @apply w-full rounded-xl sm:rounded-2xl border border-slate-200 bg-slate-50 px-4 sm:px-5 py-3 sm:py-4 text-sm text-slate-900 transition-all placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 font-medium;
 }
 
 .dark .input-premium {
@@ -165,7 +180,7 @@ body {
 }
 
 .input-with-icon {
-  @apply pl-12;
+  @apply pl-10 sm:pl-12;
 }
 
 /* Animations */
@@ -194,4 +209,19 @@ body {
 .scrollbar-custom::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 10px;
+}
+
+/* Responsive text clamp */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

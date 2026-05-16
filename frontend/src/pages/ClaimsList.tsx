@@ -63,7 +63,7 @@ export function ClaimsList() {
     <div className="space-y-8">
       <div className="control-bar">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Claims Engine</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Claims Engine</h1>
           <p className="mt-1 text-slate-500 font-medium tracking-tight">Track and verify factual statements across all personas.</p>
         </div>
         
@@ -75,7 +75,7 @@ export function ClaimsList() {
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all focus-within:shadow-md">
+      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm transition-all focus-within:shadow-md">
         <div className="relative flex-1 min-w-[280px] group">
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
           <input
