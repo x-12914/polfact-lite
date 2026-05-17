@@ -197,7 +197,7 @@ export function MonitoringConsole() {
             ) : (
               <div className="space-y-4 relative z-10">
                 <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                  Trigger the autonomous crawler agent. It will site-scrape all whitelisted news portals via Google indices, isolate factual election claims using OpenAI, cross-reference them on the live web, and persist audit logs.
+                  Trigger the autonomous crawler agent. It will site-scrape all whitelisted news portals via Google indices, isolate factual election claims using NLP pipelines, cross-reference them on the live web, and persist audit logs.
                 </p>
                 <button
                   type="button"

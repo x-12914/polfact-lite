@@ -41,7 +41,7 @@ export function Submissions() {
     },
     onError: (err: any) => {
       setAnalyzingId(null);
-      const detail = err?.response?.data?.detail || 'AI extraction failed. Check OpenAI key or file path.';
+      const detail = err?.response?.data?.detail || 'AI extraction failed. Check API key configuration or file path.';
       setAnalyzeError(detail);
       setTimeout(() => setAnalyzeError(null), 6000);
     }

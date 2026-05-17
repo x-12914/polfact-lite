@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { 
   Users, 
   CheckCircle2, 
@@ -14,7 +15,9 @@ import {
   Bell,
   Languages,
   ShieldCheck,
-  Network
+  Network,
+  ExternalLink,
+  Globe
 } from 'lucide-react';
 import { usePOIs, useStats, useActivity } from '../hooks/useQueries';
 import { cn } from '../utils/cn';
@@ -22,6 +25,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getMediaUrl } from '../utils/url';
+import api from '../services/api';
 
 export function Dashboard() {
   const { userRole } = useAuth();
@@ -30,6 +34,25 @@ export function Dashboard() {
   const { data: pois } = usePOIs();
   const { data: globalStats } = useStats();
   const { data: recentActivity } = useActivity();
+
+  const [activeTab, setActiveTab] = useState<'manual' | 'autonomous'>('manual');
+  const [auditedArticles, setAuditedArticles] = useState<any[]>([]);
+  const [loadingAudits, setLoadingAudits] = useState(false);
+
+  useEffect(() => {
+    const fetchAudits = async () => {
+      setLoadingAudits(true);
+      try {
+        const resp = await api.get('/monitoring/articles');
+        setAuditedArticles(resp.data.data);
+      } catch (e) {
+        console.error("Dashboard failed to load autonomous audits:", e);
+      } finally {
+        setLoadingAudits(false);
+      }
+    };
+    fetchAudits();
+  }, []);
 
   const stats = [
     { label: 'Total POIs', value: pois?.length || 0, icon: Users, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-500/10' },
@@ -172,44 +195,123 @@ export function Dashboard() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Recent Activity */}
         <div className="lg:col-span-2 card-premium !p-0 overflow-hidden">
-           <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-8 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 gap-4">
             <h3 className="flex items-center gap-2 text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-[0.2em]">
               <Activity className="h-4 w-4 text-indigo-500" />
               Real-time Analytics & Audit Feed
             </h3>
+            <div className="flex items-center gap-2 bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl">
+              <button
+                onClick={() => setActiveTab('manual')}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all",
+                  activeTab === 'manual' 
+                    ? "bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                )}
+              >
+                Manual Feed
+              </button>
+              <button
+                onClick={() => setActiveTab('autonomous')}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5",
+                  activeTab === 'autonomous' 
+                    ? "bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                )}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Autonomous Audits ({auditedArticles.length})
+              </button>
+            </div>
           </div>
-          <div className="divide-y divide-slate-50 dark:divide-zinc-800/40">
-            {recentActivity && recentActivity.length > 0 ? (
-              recentActivity.map((item, idx) => (
-                <div key={item.id || idx} className="flex gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/20 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-zinc-800">
-                  <div className="relative shrink-0">
-                    <img 
-                      src={getMediaUrl(item.poi_image)} 
-                      alt={item.poi}
-                      className="h-10 w-10 rounded-xl object-cover border border-slate-100 dark:border-zinc-800 shadow-sm"
-                    />
-                    <div className={cn(
-                      "absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900",
-                      item.status === 'fulfilled' ? "bg-emerald-500" : 
-                      item.status === 'ongoing' ? "bg-indigo-500" : 
-                      item.status === 'partial' ? "bg-amber-500" : "bg-rose-500"
-                    )} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">{item.poi}</p>
-                      <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
-                        {item.time ? formatDistanceToNow(new Date(item.time), { addSuffix: true }) : 'Just now'}
-                      </span>
+          <div className="divide-y divide-slate-50 dark:divide-zinc-800/40 p-4 max-h-[480px] overflow-y-auto scrollbar-custom">
+            {activeTab === 'manual' ? (
+              recentActivity && recentActivity.length > 0 ? (
+                recentActivity.map((item, idx) => (
+                  <div key={item.id || idx} className="flex gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800/20 transition-all border border-transparent hover:border-slate-100 dark:hover:border-zinc-800 animate-fade-in-up">
+                    <div className="relative shrink-0">
+                      <img 
+                        src={getMediaUrl(item.poi_image)} 
+                        alt={item.poi}
+                        className="h-10 w-10 rounded-xl object-cover border border-slate-100 dark:border-zinc-800 shadow-sm"
+                      />
+                      <div className={cn(
+                        "absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900",
+                        item.status === 'fulfilled' ? "bg-emerald-500" : 
+                        item.status === 'ongoing' ? "bg-indigo-500" : 
+                        item.status === 'partial' ? "bg-amber-500" : "bg-rose-500"
+                      )} />
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{item.action}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-bold text-slate-900 dark:text-white">{item.poi}</p>
+                        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
+                          {item.time ? formatDistanceToNow(new Date(item.time), { addSuffix: true }) : 'Just now'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{item.action}</p>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="py-24 text-center text-slate-400 dark:text-slate-500 italic text-sm">
+                  No recent activity recorded yet.
                 </div>
-              ))
+              )
             ) : (
-              <div className="py-24 text-center text-slate-400 dark:text-slate-500 italic text-sm">
-                No recent activity recorded yet.
-              </div>
+              auditedArticles && auditedArticles.length > 0 ? (
+                auditedArticles.slice(0, 8).map((article, idx) => (
+                  <div key={article.id || idx} className="p-4 rounded-xl border border-slate-200/40 dark:border-zinc-800/80 hover:bg-slate-50 dark:hover:bg-zinc-800/20 bg-slate-50/20 dark:bg-zinc-950/20 transition-all mb-4 last:mb-0 animate-fade-in-up animate-in duration-300 slide-in-from-top-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                            News Crawler
+                          </span>
+                          <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500">
+                            Scraped {article.created_at ? formatDistanceToNow(new Date(article.created_at), { addSuffix: true }) : 'Recently'}
+                          </span>
+                        </div>
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mt-1.5 leading-relaxed">
+                          {article.title}
+                        </h4>
+                      </div>
+                      <a 
+                        href={article.url} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-indigo-500 hover:text-indigo-400 p-1 flex items-center shrink-0"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
+                    {/* Claims mini preview */}
+                    <div className="mt-3 pl-3 border-l-2 border-indigo-500 space-y-2">
+                      {article.extracted_claims?.slice(0, 2).map((claim: any, cIdx: number) => (
+                        <div key={cIdx} className="text-[11px] leading-relaxed">
+                          <div className="flex items-start justify-between gap-4 font-semibold text-slate-600 dark:text-slate-300">
+                            <span className="line-clamp-2">"{claim.text}"</span>
+                            <span className={cn(
+                              "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ml-2 shrink-0",
+                              claim.status === 'fulfilled' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+                              claim.status === 'partial' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                              "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                            )}>
+                              {claim.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-24 text-center text-slate-400 dark:text-slate-500 italic text-sm">
+                  No autonomous audits crawled yet. Go to **Site Monitor** to start a scan cycle!
+                </div>
+              )
             )}
           </div>
         </div>

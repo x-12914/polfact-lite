@@ -285,7 +285,7 @@ export function LiveASR() {
       setAnalysisResult(analysis);
     } catch (e) {
       console.error("AI deep analysis failed:", e);
-      alert("OpenAI validation engine failed to scan this transcript.");
+      alert("Factual validation engine failed to scan this transcript.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -524,7 +524,7 @@ export function LiveASR() {
                     Live Claim AI Verification Signal Complete
                   </h4>
                   <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">
-                    Analyzed in sync with GPT Factual Abstraction Core
+                    Analyzed in sync with Factual Verification Core
                   </p>
                 </div>
               </div>
