@@ -12,7 +12,8 @@ import {
   Database,
   BarChart3,
   Scan,
-  X
+  X,
+  Mic
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../contexts/AuthContext';
@@ -31,11 +32,13 @@ interface SidebarProps {
 
 const baseNavigation: NavItem[] = [
   { name: 'Console', description: 'Real-time overview', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Live ASR', description: 'Real-time Mic Ingestion', href: '/live-asr', icon: Mic, roles: ['user', 'journalist', 'admin'] },
   { name: 'Subjects', description: 'Persona Intelligence', href: '/pois', icon: UserIcon, roles: ['user', 'journalist', 'admin'] },
   { name: 'Claims', description: 'Fact Verification', href: '/claims', icon: FileCheck, roles: ['user', 'journalist', 'admin'] },
   { name: 'Sources', description: 'Evidence Archive', href: '/sources', icon: Database, roles: ['user', 'journalist', 'admin'] },
   { name: 'Media Box', description: 'Signal Processing', href: '/submissions', icon: Upload, roles: ['journalist', 'admin'] },
   { name: 'DF Analyzer', description: 'AI Video Analysis', href: '/analyzer', icon: Scan, roles: ['user', 'journalist', 'admin'] },
+  { name: 'Site Monitor', description: 'Autonomous Site Audits', href: '/site-monitor', icon: ShieldAlert, roles: ['journalist', 'admin'] },
 ];
 
 const journalistNavigation: NavItem[] = [
@@ -75,8 +78,8 @@ export function Sidebar({ onClose }: SidebarProps) {
             <BarChart3 className="h-5 w-5 lg:h-6 lg:w-6 text-white" />
           </div>
           <div>
-            <span className="text-sm font-black text-white uppercase tracking-[0.2em] block leading-none">PolFact</span>
-            <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em] block mt-1 opacity-80">Lite v1.0</span>
+            <span className="text-sm font-black text-white uppercase tracking-[0.2em] block leading-none">Fact Checker</span>
+            <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em] block mt-1 opacity-80">Ecosystem v1.0</span>
           </div>
         </div>
         {/* Mobile close button */}
@@ -135,10 +138,10 @@ export function Sidebar({ onClose }: SidebarProps) {
         <div className="mt-3 lg:mt-4 px-3 lg:px-4 py-3 lg:py-4 rounded-xl lg:rounded-2xl bg-indigo-600/5 border border-indigo-500/10">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-               <span className="text-[10px] font-bold text-slate-300">PF</span>
+               <span className="text-[10px] font-bold text-slate-300">FC</span>
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-black text-white uppercase tracking-wider truncate">Polidog</p>
+              <p className="text-[10px] font-black text-white uppercase tracking-wider truncate">Fact Checker Core</p>
               <p className="text-[9px] text-indigo-400 font-bold uppercase">{userRole}</p>
             </div>
           </div>

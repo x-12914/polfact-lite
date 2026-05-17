@@ -125,7 +125,7 @@ def analyze_claim(db: Session, id: int) -> Optional[Claim]:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a factual analysis engine for PolFact."},
+                {"role": "system", "content": "You are a factual analysis engine for Fact Checker AI."},
                 {"role": "user", "content": prompt}
             ],
             response_format={ "type": "json_object" }

@@ -31,11 +31,11 @@ export function Login() {
     <div className="flex min-h-screen min-h-[100dvh] items-center justify-center bg-slate-50 dark:bg-[#020617] px-4 py-8">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg shadow-black/20">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-black/20">
             <ShieldCheck className="h-10 w-10 text-white" />
           </div>
-          <h1 className="mt-6 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">PolFact Lite</h1>
-          <p className="mt-2 text-slate-500">Sign in to manage political fact-checking</p>
+          <h1 className="mt-6 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-wider">Fact Checker AI</h1>
+          <p className="mt-2 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-[10px] text-indigo-500 dark:text-indigo-400">Election Intelligence & Media Verification Ecosystem</p>
         </div>
 
         <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8 shadow-sm">
@@ -55,7 +55,7 @@ export function Login() {
                   type="email"
                   required
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-sm text-slate-900 transition-all focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  placeholder="admin@example.com"
+                  placeholder="admin@factchecker.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />

@@ -1,5 +1,5 @@
 """
-PolFact Lite - Main Application Entry Point
+Fact Checker AI - Main Application Entry Point
 Runs without Docker, Celery, Redis, or PostgreSQL.
 Uses SQLite for database and FastAPI BackgroundTasks for async jobs.
 """

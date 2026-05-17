@@ -4,14 +4,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "PolFact Lite"
+    PROJECT_NAME: str = "Fact Checker AI"
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "changeme-override-in-env"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     # SQLite by default — no Postgres/Redis needed
-    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./polfact.db"
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./factchecker.db"
     UPLOAD_DIR: str = "uploads"
-    FIRST_SUPERUSER: str = "admin@polfact.com"
+    FIRST_SUPERUSER: str = "admin@factchecker.com"
     FIRST_SUPERUSER_PASSWORD: str = "admin123"
     SERPER_API_KEY: str = ""
     OPENAI_API_KEY: str = ""

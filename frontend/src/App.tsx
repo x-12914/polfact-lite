@@ -17,6 +17,8 @@ import { Submissions } from './pages/Submissions.tsx';
 import { WebScraper } from './pages/WebScraper.tsx';
 import { ClaimsList } from './pages/ClaimsList.tsx';
 import { VideoAnalyzer } from './pages/VideoAnalyzer.tsx';
+import { LiveASR } from './pages/LiveASR.tsx';
+import { MonitoringConsole } from './pages/MonitoringConsole.tsx';
 
 function App() {
   return (
@@ -98,6 +100,8 @@ function App() {
             <Route path="sources" element={<Sources />} />
             <Route path="pictures" element={<Pictures />} />
             <Route path="analyzer" element={<VideoAnalyzer />} />
+            <Route path="live-asr" element={<LiveASR />} />
+            <Route path="site-monitor" element={<MonitoringConsole />} />
             <Route path="admin" element={<Admin />} />
             <Route 
               path="settings" 
